@@ -66,8 +66,7 @@ public class DriveSubsystem extends SubsystemBase {
       });
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem() {
-  }
+  public DriveSubsystem() {}
 
   @Override
   public void periodic() {

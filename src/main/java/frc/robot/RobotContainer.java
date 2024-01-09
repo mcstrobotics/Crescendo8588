@@ -5,9 +5,13 @@
 package frc.robot;
 
 
-import frc.robot.commands.AutonCommand;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.OIConstants;
+import frc.robot.commands.AutonCommand;
+import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.usercontrol.GamepadF310;
 
 
@@ -18,6 +22,8 @@ import frc.robot.usercontrol.GamepadF310;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+
   private GamepadF310 f310 = new GamepadF310(0);
 
   private AutonCommand autonCommand = new AutonCommand();
@@ -26,6 +32,17 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+
+    m_robotDrive.setDefaultCommand(
+        // The left stick controls translation of the robot.
+        // Turning is controlled by the X axis of the right stick.
+        new RunCommand(
+            () -> m_robotDrive.drive(
+                -MathUtil.applyDeadband(f310.getLeftY(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(f310.getLeftX(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(f310.getRightX(), OIConstants.kDriveDeadband),
+                true, true),
+            m_robotDrive));
   }
 
   /**
