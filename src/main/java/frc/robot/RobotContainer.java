@@ -26,7 +26,7 @@ public class RobotContainer {
 
   private GamepadF310 f310 = new GamepadF310(0);
 
-  private AutonCommand autonCommand = new AutonCommand();
+  private AutonCommand autonCommand = new AutonCommand(m_robotDrive);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
