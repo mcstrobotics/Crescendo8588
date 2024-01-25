@@ -52,7 +52,6 @@ public final class Constants {
     public static final double kBackLeftChassisAngularOffset = Math.PI;
     public static final double kBackRightChassisAngularOffset = Math.PI / 2;
 
-    // WE WILL ALSO NEED TO CHANGE THESE TOO
     // SPARK MAX CAN IDs
     public static final int kFrontLeftDrivingCanId = 11;
     public static final int kRearLeftDrivingCanId = 13;
@@ -117,6 +116,62 @@ public final class Constants {
 
     public static final int kDrivingMotorCurrentLimit = 50; // amps
     public static final int kTurningMotorCurrentLimit = 20; // amps
+  }
+  
+  // NOTE, if we have time we many want to look into enums, they are a more readable way of handling this from what I hear - Mihir
+  // Whenever you add a constant, please put a comment for what its units are/what it is for
+
+  /** Constants for the Intake Subsystem */
+  public static final class IntakeConstants {
+    // CAN IDs
+    public static final int kIntakeCanId = 20;
+
+    // PID tuning
+    // public static final double kIntakeP = 1;
+    // public static final double kIntakeI = 0;
+    // public static final double kIntakeD = 0;
+  }
+
+  /** Constants for the Indexing Subsystem */
+  public static final class IndexingConstants {
+    // CAN IDs
+    public static final int kLeftCanId = 21;
+    public static final int kRightCanId = 22;
+
+    // PID tuning
+    // public static final double kLeftP = 1;
+    // public static final double kLeftI = 0;
+    // public static final double kLeftD = 0;
+    // public static final double kLeftFF = 0;
+
+    // public static final double kRightP = 1;
+    // public static final double kRightI = 0;
+    // public static final double kRightD = 0;
+    // public static final double kRightFF = 0;
+  }
+
+  /** Constants for the Shooter Subsystem */
+  public static final class ShooterConstants {
+    // CAN IDs
+    public static final int kAimingCanId = 30;
+    public static final int kBottomCanId = 31;
+    public static final int kTopCanId = 32;
+
+    // PID tuning
+    // public static final double kAimingP = 1;
+    // public static final double kAimingI = 0;
+    // public static final double kAimingD = 0;
+    // public static final double kAimingFF = 0;
+
+    // public static final double kBottomP = 1;
+    // public static final double kBottomI = 0;
+    // public static final double kBottomD = 0;
+    // public static final double kBottomFF = 0;
+
+    // public static final double kTopP = 1;
+    // public static final double kTopI = 0;
+    // public static final double kTopD = 0;
+    // public static final double kTopFF = 0;
   }
 
   public static final class OIConstants {
