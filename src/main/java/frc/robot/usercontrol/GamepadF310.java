@@ -2,7 +2,9 @@
  * Made by Tejas Mehta
  * Made on Monday, March 22, 2021
  * File Name: Gamepad
- * Package: frc.team8588.controller*/
+ * Package: frc.team8588.controller
+ */
+
 package frc.robot.usercontrol;
 
 import edu.wpi.first.wpilibj.Joystick;
@@ -59,13 +61,17 @@ public class GamepadF310 {
         return joystick.getRawAxis(GAMEPAD_RIGHT_TRIGGER);
     }
 
-    public boolean rightTriggerPressed() { return joystick.getRawAxis(GAMEPAD_RIGHT_TRIGGER) > 0.3; }
+    public boolean rightTriggerPressed() {
+        return joystick.getRawAxis(GAMEPAD_RIGHT_TRIGGER) > 0.3;
+    }
 
     public double getLeftTrigger() {
         return joystick.getRawAxis(GAMEPAD_LEFT_TRIGGER);
     }
 
-    public boolean leftTriggerPressed() { return joystick.getRawAxis(GAMEPAD_LEFT_TRIGGER) > 0.3; }
+    public boolean leftTriggerPressed() { 
+        return joystick.getRawAxis(GAMEPAD_LEFT_TRIGGER) > 0.3;
+    }
 
     public boolean getA() {
         return joystick.getRawButton(GAMEPAD_A);
@@ -90,5 +96,4 @@ public class GamepadF310 {
     public boolean getRightBumper() {
         return joystick.getRawButton(GAMEPAD_RIGHT_BUMPER);
     }
-
 }

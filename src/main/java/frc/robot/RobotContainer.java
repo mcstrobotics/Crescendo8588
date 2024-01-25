@@ -64,5 +64,5 @@ public class RobotContainer {
   public AutonCommand getAutonCommand() {
     // autonCommand will run in autonomous
     return autonCommand;
-}
+  }
 }
