@@ -14,12 +14,10 @@ import frc.robot.Constants.IntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
   private IntakeChassis chassis;
-  private IntakeInputs inputs;
 
   /** Creates a new IntakeSubsystem. */
-  public IntakeSubsystem(IntakeChassis chassis, IntakeInputs inputs) {
+  public IntakeSubsystem(IntakeChassis chassis) {
     this.chassis = chassis;
-    this.inputs = inputs;
 
     // Additional initialization stuff here if needed
 

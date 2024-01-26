@@ -16,6 +16,7 @@ import frc.robot.commands.AutonCommand;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.usercontrol.GamepadF310;
 import edu.wpi.first.wpilibj2.command.Command;
+
 import edu.wpi.first.wpilibj2.command.Commands;
 
 // CONSTANTS
@@ -23,7 +24,6 @@ import frc.robot.Constants.IntakeConstants;
 
 // SUBSYSTEMS
 import frc.robot.subsystems.intake.IntakeChassis;
-import frc.robot.subsystems.intake.IntakeInputs;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 
 /**
@@ -38,9 +38,7 @@ public class RobotContainer {
   private GamepadF310 f310 = new GamepadF310(0);
 
   private IntakeSubsystem intakeSubsystem = new IntakeSubsystem(new IntakeChassis(
-      new CANSparkMax(IntakeConstants.kIntakeCanId, CANSparkLowLevel.MotorType.kBrushless)),
-      new IntakeInputs(f310::getRightBumper, f310::getLeftBumper) // intake
-  );
+      new CANSparkMax(IntakeConstants.kIntakeCanId, CANSparkLowLevel.MotorType.kBrushless)));
 
   private AutonCommand autonCommand = new AutonCommand(m_robotDrive);
 
