@@ -117,8 +117,7 @@ public final class Constants {
     public static final int kDrivingMotorCurrentLimit = 50; // amps
     public static final int kTurningMotorCurrentLimit = 20; // amps
   }
-  
-  // NOTE, if we have time we many want to look into enums, they are a more readable way of handling this from what I hear - Mihir
+
   // Whenever you add a constant, please put a comment for what its units are/what it is for
 
   /** Constants for the Intake Subsystem */
@@ -126,10 +125,15 @@ public final class Constants {
     // CAN IDs
     public static final int kIntakeCanId = 20;
 
+    // SPEEDS
+    public static final double kIntakeInSpeed = 1;
+    public static final double kIntakeOutSpeed = .5;
+
     // PID tuning
     // public static final double kIntakeP = 1;
     // public static final double kIntakeI = 0;
     // public static final double kIntakeD = 0;
+    // public static final double kIntakeFF = 0;
   }
 
   /** Constants for the Indexing Subsystem */

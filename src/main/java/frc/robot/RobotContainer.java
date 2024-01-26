@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkLowLevel;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -13,7 +15,16 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.commands.AutonCommand;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.usercontrol.GamepadF310;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 
+// CONSTANTS
+import frc.robot.Constants.IntakeConstants;
+
+// SUBSYSTEMS
+import frc.robot.subsystems.intake.IntakeChassis;
+import frc.robot.subsystems.intake.IntakeInputs;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -25,6 +36,11 @@ public class RobotContainer {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
   private GamepadF310 f310 = new GamepadF310(0);
+
+  private IntakeSubsystem intakeSubsystem = new IntakeSubsystem(new IntakeChassis(
+      new CANSparkMax(IntakeConstants.kIntakeCanId, CANSparkLowLevel.MotorType.kBrushless)),
+      new IntakeInputs(f310::getRightBumper, f310::getLeftBumper) // intake
+  );
 
   private AutonCommand autonCommand = new AutonCommand(m_robotDrive);
 
@@ -54,7 +70,20 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  private void configureBindings() {}
+  private void configureBindings() {
+    // Mihir - Guys, this is what I was talking about when we were talking about command based programming:
+    // Intake Bindings
+    new Trigger(f310::getA) // bindings are TBD
+        .onTrue(Commands.runOnce( // fires once when the button is pressed
+            intakeSubsystem::intakeIn)) // invoke intake in method
+        .onFalse(Commands.runOnce( // fires once when the button is released
+            intakeSubsystem::stopIntake)); // invoke stop intake method
+    new Trigger(f310::getB)
+        .onTrue(Commands.runOnce(
+            intakeSubsystem::intakeOut))
+        .onFalse(Commands.runOnce(
+            intakeSubsystem::stopIntake));
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
