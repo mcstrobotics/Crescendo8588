@@ -47,7 +47,7 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   /** stop intake motor */
-  public void stopIntake() {
+  public void intakeStop() {
     System.out.println("Intake stopped");
     chassis.getIntake().set(0);
   }

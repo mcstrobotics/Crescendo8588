@@ -75,12 +75,12 @@ public class RobotContainer {
         .onTrue(Commands.runOnce( // fires once when the button is pressed
             intakeSubsystem::intakeIn)) // invoke intake in method
         .onFalse(Commands.runOnce( // fires once when the button is released
-            intakeSubsystem::stopIntake)); // invoke stop intake method
+            intakeSubsystem::intakeStop)); // invoke stop intake method
     new Trigger(f310::getB)
         .onTrue(Commands.runOnce(
             intakeSubsystem::intakeOut))
         .onFalse(Commands.runOnce(
-            intakeSubsystem::stopIntake));
+            intakeSubsystem::intakeStop));
   }
 
   /**
