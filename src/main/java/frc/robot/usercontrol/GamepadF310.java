@@ -35,8 +35,8 @@ public class GamepadF310 {
 
     public static final int GAMEPAD_DPAD = 6;
 
-
     public Joystick joystick;
+
     public GamepadF310(int port) {
         joystick = new Joystick(port);
     }
@@ -69,7 +69,7 @@ public class GamepadF310 {
         return joystick.getRawAxis(GAMEPAD_LEFT_TRIGGER);
     }
 
-    public boolean leftTriggerPressed() { 
+    public boolean leftTriggerPressed() {
         return joystick.getRawAxis(GAMEPAD_LEFT_TRIGGER) > 0.3;
     }
 

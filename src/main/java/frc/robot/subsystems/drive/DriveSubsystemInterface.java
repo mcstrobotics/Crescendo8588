@@ -4,7 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
-public interface DriveSubsystemInterface extends Subsystem{
+public interface DriveSubsystemInterface extends Subsystem {
     void periodic();
 
     Pose2d getPose();

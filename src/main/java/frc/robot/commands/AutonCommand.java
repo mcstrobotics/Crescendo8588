@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.subsystems.drive.DriveSubsystemInterface;
 
-
 public class AutonCommand extends SequentialCommandGroup {
     private final DriveSubsystemInterface driveSubsystemInterface;
 
@@ -17,12 +16,11 @@ public class AutonCommand extends SequentialCommandGroup {
         addRequirements(driveSubsystemInterface);
 
         addCommands(
-            // Reset encoders
-            new InstantCommand(driveSubsystemInterface::resetEncoders), 
-            new RunCommand(() -> {
-                // Commmands go here
-                })
-        );
+                // Reset encoders
+                new InstantCommand(driveSubsystemInterface::resetEncoders),
+                new RunCommand(() -> {
+                    // Commmands go here
+                }));
     }
 
 }
