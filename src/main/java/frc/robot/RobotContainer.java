@@ -38,7 +38,7 @@ public class RobotContainer {
         private GamepadF310 f310 = new GamepadF310(0);
 
         private IntakeSubsystem intakeSubsystem = new IntakeSubsystem(new IntakeChassis(
-                        new CANSparkMax(IntakeConstants.kIntakeCanId, CANSparkLowLevel.MotorType.kBrushless)));
+                new CANSparkMax(IntakeConstants.kIntakeCanId, CANSparkLowLevel.MotorType.kBrushless)));
 
         private AutonCommand autonCommand = new AutonCommand(m_robotDrive);
 
@@ -48,18 +48,15 @@ public class RobotContainer {
                 configureBindings();
 
                 m_robotDrive.setDefaultCommand(
-                                // The left stick controls translation of the robot.
-                                // Turning is controlled by the X axis of the right stick.
-                                new RunCommand(
-                                                () -> m_robotDrive.drive(
-                                                                -MathUtil.applyDeadband(f310.getLeftY(),
-                                                                                OIConstants.kDriveDeadband),
-                                                                -MathUtil.applyDeadband(f310.getLeftX(),
-                                                                                OIConstants.kDriveDeadband),
-                                                                -MathUtil.applyDeadband(f310.getRightX(),
-                                                                                OIConstants.kDriveDeadband),
-                                                                true, true),
-                                                m_robotDrive));
+                        // The left stick controls translation of the robot.
+                        // Turning is controlled by the X axis of the right stick.
+                        new RunCommand(() -> m_robotDrive.drive(
+                                -MathUtil.applyDeadband(f310.getLeftY(), OIConstants.kDriveDeadband),
+                                -MathUtil.applyDeadband(f310.getLeftX(), OIConstants.kDriveDeadband),
+                                -MathUtil.applyDeadband(f310.getRightX(), OIConstants.kDriveDeadband),
+                                true,
+                                true),
+                                m_robotDrive));
         }
 
         /**
@@ -85,7 +82,6 @@ public class RobotContainer {
                 B.negate().and(A).onTrue(Commands.runOnce(intakeSubsystem::intakeIn));
 
                 A.or(B).negate().onTrue(Commands.runOnce(intakeSubsystem::intakeStop));
-
         }
 
         /**

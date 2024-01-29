@@ -16,11 +16,11 @@ public class AutonCommand extends SequentialCommandGroup {
         addRequirements(driveSubsystemInterface);
 
         addCommands(
-                // Reset encoders
-                new InstantCommand(driveSubsystemInterface::resetEncoders),
-                new RunCommand(() -> {
-                    // Commmands go here
-                }));
+            // Reset encoders
+            new InstantCommand(driveSubsystemInterface::resetEncoders),
+            new RunCommand(() -> {
+                // Commmands go here
+            }));
     }
 
 }
