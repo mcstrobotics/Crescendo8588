@@ -9,21 +9,20 @@ package frc.robot.usercontrol;
 
 import edu.wpi.first.wpilibj.Joystick;
 
+/**
+ * Gamepad mappings as the F310 controller isn't officially in the WPI repo.
+ * Each Number corresponds to a specific "axis" or "button" in the joystick class.
+ * The variable names should be pretty self-explanatory as to what each number
+ * represents.
+ */
 public class GamepadF310 {
-
-    /**
-     * Gamepad mappings as the F310 controller isn't officially in the WPI repo.
-     * Each Number corresponds to a specific "axis" or "button" in the joystick class.
-     * The variable names should be pretty self-explanatory as to what each number
-     * represents.
-     */
     public static final int GAMEPAD_LEFT_X = 0;
     public static final int GAMEPAD_LEFT_Y = 1;
     public static final int GAMEPAD_RIGHT_X = 4;
     public static final int GAMEPAD_RIGHT_Y = 5;
 
     public static final int GAMEPAD_LEFT_TRIGGER = 2;
-    public static final int GAMEPAD_RIGHT_TRIGGER = 3; // not sure if these are right
+    public static final int GAMEPAD_RIGHT_TRIGGER = 3;
 
     public static final int GAMEPAD_A = 1;
     public static final int GAMEPAD_B = 2;
