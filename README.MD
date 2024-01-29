@@ -3,7 +3,8 @@
 [Doc with all info](https://docs.google.com/document/d/1kVM2zx_AzjtKyKTG_mGzInbQ-rBcM5-2JB4lRf7WDtQ/edit)  
 [Planning Doc](https://docs.google.com/document/d/1Zz4CwSUwrkcmWaixhhw2TAhLp6Z7IyciOJ-vBNrFHzI/edit) (will probably get merged into main doc) 
 
-If you have any questions about anything programming subteam related feel free to reach me at mihir.malaviya@mcvts.org 
+
+*If you have any questions about anything programming subteam related feel free to reach me at mihir.malaviya@mcvts.org* 
 
 # TODOS
 
@@ -22,15 +23,15 @@ If you have any questions about anything programming subteam related feel free t
 
 ## Intake
 - I want someone to add an IntakeSubsystemInterface and set that up (easy 1-2 person job)
-
 - I want someone to set up PIDs (2-3 person job) (dont do this yet)
     - most of the code is [in here](https://github.com/REVrobotics/SPARK-MAX-Examples/blob/master/Java/Smart%20Motion%20Example/src/main/java/frc/robot/Robot.java) you will just need to integrate it in here, for now dont use constants for PIDS
 
-## Indexing (Afnan + ~3 ppl)
+## Indexing
+(Afnan + ~3 ppl)
 
 set up boilerplate (look at example subsystem, intake subsystem, and the old code for reference, as well as their website if needed)
 
-you will need to make IndexingChassis.java and IndexingSubsystem.java
+you will need to make IndexingChassis.java IndexingSubsystem.java and IndexingSubsystemInterface.java
 
 take in the motors
 
@@ -38,6 +39,10 @@ take in the motors
 - indexing in
 - indexing out
 - indexing stop
+
+add a command that does indexing in until a boolean is true
+
+for now control the boolean with a button in the joystick or sm
 
 ^ any constants should be defined in Constants.java
 
@@ -54,7 +59,7 @@ add javadocs and comments where needed
     - temprature
     - current draw
     - power draw
----
+
 ### after we are done with all of this, we will show it to Val and take his feedback
 this is all really basic, next thing we need to factor in is the sensor
 
@@ -64,13 +69,15 @@ once we figure out the sensor stuff
 
 
 ### what we will do next
-- PIDS + dashboard
+- PIDS
 - figuring out a system to make sure the note is in the right place
 
-## Shooter (Ethan + ~4 ppl)
+## Shooter
+(Ethan + ~4 ppl)  
+
 set up boilerplate (look at example subsystem, intake subsystem, and the old code for reference, as well as their website if needed)
 
-you will need to make ShooterChassis.java and ShooterSubsystem.java
+you will need to make ShooterChassis.java ShooterSubsystem.java and ShooterSubsystemInterface.java
 
 take in the motors
 
@@ -97,13 +104,13 @@ add javadocs and comments where needed
     - temprature
     - current draw
     - power draw
----
+
 ### after we are done with all of this, we will show it to Val and take his feedback
 we will need to add stuff, this is just a starting off point
 
 ### what we will do next
-- PIDS + dashboard
+- PIDS
 - figuring out a system to make sure the note is in the right place
 
 ## Vision
-we need a team of ~4 working on vision, 2 experienced 2 unexperienced
+we need a team of ~4 working on vision, 2 experienced at least

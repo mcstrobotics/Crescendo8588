@@ -33,63 +33,68 @@ import frc.robot.subsystems.intake.IntakeSubsystem;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+        private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
-  private GamepadF310 f310 = new GamepadF310(0);
+        private GamepadF310 f310 = new GamepadF310(0);
 
-  private IntakeSubsystem intakeSubsystem = new IntakeSubsystem(new IntakeChassis(
-      new CANSparkMax(IntakeConstants.kIntakeCanId, CANSparkLowLevel.MotorType.kBrushless)));
+        private IntakeSubsystem intakeSubsystem = new IntakeSubsystem(new IntakeChassis(
+                        new CANSparkMax(IntakeConstants.kIntakeCanId, CANSparkLowLevel.MotorType.kBrushless)));
 
-  private AutonCommand autonCommand = new AutonCommand(m_robotDrive);
+        private AutonCommand autonCommand = new AutonCommand(m_robotDrive);
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
-    // Configure the trigger bindings
-    configureBindings();
+        /** The container for the robot. Contains subsystems, OI devices, and commands. */
+        public RobotContainer() {
+                // Configure the trigger bindings
+                configureBindings();
 
-    m_robotDrive.setDefaultCommand(
-        // The left stick controls translation of the robot.
-        // Turning is controlled by the X axis of the right stick.
-        new RunCommand(
-            () -> m_robotDrive.drive(
-                -MathUtil.applyDeadband(f310.getLeftY(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(f310.getLeftX(), OIConstants.kDriveDeadband),
-                -MathUtil.applyDeadband(f310.getRightX(), OIConstants.kDriveDeadband),
-                true, true),
-            m_robotDrive));
-  }
+                m_robotDrive.setDefaultCommand(
+                                // The left stick controls translation of the robot.
+                                // Turning is controlled by the X axis of the right stick.
+                                new RunCommand(
+                                                () -> m_robotDrive.drive(
+                                                                -MathUtil.applyDeadband(f310.getLeftY(),
+                                                                                OIConstants.kDriveDeadband),
+                                                                -MathUtil.applyDeadband(f310.getLeftX(),
+                                                                                OIConstants.kDriveDeadband),
+                                                                -MathUtil.applyDeadband(f310.getRightX(),
+                                                                                OIConstants.kDriveDeadband),
+                                                                true, true),
+                                                m_robotDrive));
+        }
 
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
-  private void configureBindings() {
-    // Mihir - Guys, this is what I was talking about when we were talking about command based programming:
-    // Intake Bindings
-    new Trigger(f310::getA) // bindings are TBD
-        .onTrue(Commands.runOnce( // fires once when the button is pressed
-            intakeSubsystem::intakeIn)) // invoke intake in method
-        .onFalse(Commands.runOnce( // fires once when the button is released
-            intakeSubsystem::intakeStop)); // invoke stop intake method
-    new Trigger(f310::getB)
-        .onTrue(Commands.runOnce(
-            intakeSubsystem::intakeOut))
-        .onFalse(Commands.runOnce(
-            intakeSubsystem::intakeStop));
-  }
+        /**
+         * Use this method to define your trigger->command mappings. Triggers can be created via the
+         * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
+         * predicate, or via the named factories in {@link
+         * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
+         * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
+         * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+         * joysticks}.
+         */
+        private void configureBindings() {
+                // Mihir - Guys, this is what I was talking about when we were talking about command based programming:
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public AutonCommand getAutonCommand() {
-    // autonCommand will run in autonomous
-    return autonCommand;
-  }
+                final Trigger A = new Trigger(new Trigger(f310::getA));
+                final Trigger B = new Trigger(new Trigger(f310::getB));
+
+                // Intake Bindings
+                A.onTrue(Commands.runOnce(intakeSubsystem::intakeIn));
+                A.negate().and(B).onTrue(Commands.runOnce(intakeSubsystem::intakeOut));
+
+                B.onTrue(Commands.runOnce(intakeSubsystem::intakeOut));
+                B.negate().and(A).onTrue(Commands.runOnce(intakeSubsystem::intakeIn));
+
+                A.or(B).negate().onTrue(Commands.runOnce(intakeSubsystem::intakeStop));
+
+        }
+
+        /**
+         * Use this to pass the autonomous command to the main {@link Robot} class.
+         *
+         * @return the command to run in autonomous
+         */
+        public AutonCommand getAutonCommand() {
+                // autonCommand will run in autonomous
+                return autonCommand;
+        }
 }
