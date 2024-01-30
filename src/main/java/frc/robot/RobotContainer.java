@@ -37,8 +37,9 @@ public class RobotContainer {
 
         private GamepadF310 f310 = new GamepadF310(0);
 
-        private IntakeSubsystem intakeSubsystem = new IntakeSubsystem(new IntakeChassis(
-                new CANSparkMax(IntakeConstants.kIntakeCanId, CANSparkLowLevel.MotorType.kBrushless)));
+        private IntakeSubsystem intakeSubsystem = new IntakeSubsystem(
+                new IntakeChassis(
+                        new CANSparkMax(IntakeConstants.kIntakeCanId, CANSparkLowLevel.MotorType.kBrushless)));
 
         private AutonCommand autonCommand = new AutonCommand(m_robotDrive);
 
@@ -57,6 +58,7 @@ public class RobotContainer {
                                 true,
                                 true),
                                 m_robotDrive));
+
         }
 
         /**
@@ -71,17 +73,13 @@ public class RobotContainer {
         private void configureBindings() {
                 // Mihir - Guys, this is what I was talking about when we were talking about command based programming:
 
+                // Intake Bindings (these are for temporary testing purposes, will change once IntakeCommand is made / bindings will change)
                 final Trigger A = new Trigger(new Trigger(f310::getA));
                 final Trigger B = new Trigger(new Trigger(f310::getB));
 
-                // Intake Bindings
-                A.onTrue(Commands.runOnce(intakeSubsystem::intakeIn));
-                A.negate().and(B).onTrue(Commands.runOnce(intakeSubsystem::intakeOut));
-
-                B.onTrue(Commands.runOnce(intakeSubsystem::intakeOut));
-                B.negate().and(A).onTrue(Commands.runOnce(intakeSubsystem::intakeIn));
-
-                A.or(B).negate().onTrue(Commands.runOnce(intakeSubsystem::intakeStop));
+                A.whileTrue(Commands.run(intakeSubsystem::intakeIn));
+                B.whileTrue(Commands.run(intakeSubsystem::intakeOut));
+                intakeSubsystem.setDefaultCommand(new RunCommand(intakeSubsystem::intakeStop, intakeSubsystem));
         }
 
         /**
