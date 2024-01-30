@@ -25,6 +25,7 @@
 - I want someone to add an IntakeSubsystemInterface and set that up (easy 1-2 person job)
 - I want someone to set up PIDs (2-3 person job) (dont do this yet)
     - most of the code is [in here](https://github.com/REVrobotics/SPARK-MAX-Examples/blob/master/Java/Smart%20Motion%20Example/src/main/java/frc/robot/Robot.java) you will just need to integrate it in here, for now dont use constants for PIDS
+- We need something set up so that if motors are too hot intake will stop and it will show on the dashboard
 
 ## Indexing
 (Afnan + ~3 ppl)
@@ -111,6 +112,9 @@ we will need to add stuff, this is just a starting off point
 ### what we will do next
 - PIDS
 - figuring out a system to make sure the note is in the right place
+
+## Drive
+we need someone to put in debug stuff for smartdashboard 
 
 ## Vision
 we need a team of ~4 working on vision, 2 experienced at least
