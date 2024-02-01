@@ -157,9 +157,9 @@ public final class Constants {
   /** Constants for the Shooter Subsystem */
   public static final class ShooterConstants {
     // CAN IDs
-    public static final int kAimingCanId = 30;
-    public static final int kBottomCanId = 31;
-    public static final int kTopCanId = 32;
+    public static final int kAimingCanId = 23;
+    public static final int kBottomCanId = 24;
+    public static final int kTopCanId = 25;
 
     // PID tuning
     // public static final double kAimingP = 1;
