@@ -6,11 +6,35 @@
 
 *If you have any questions about anything programming subteam related feel free to reach me at mihir.malaviya@mcvts.org* 
 
+# BOT INFO
+
+| Component               | CAN ID |
+|-------------------------|--------|
+| Front Left Driving      | 11     |
+| Rear Left Driving       | 13     |
+| Front Right Driving     | 15     |
+| Rear Right Driving      | 17     |
+| Front Left Turning      | 10     |
+| Rear Left Turning       | 12     |
+| Front Right Turning     | 14     |
+| Rear Right Turning      | 16     |
+| Intake Motor            | 20     |
+| Indexing Motor Left     | 21     |
+| Indexing Motor Right    | 22     |
+| Shooter Aiming Motor    | 23     |
+| Shooter Bottom Motor    | 24     |
+| Shooter Top Motor       | 25     |
+
 # TODOS
 
 *how this works is you look in here for sm that you think you could do, tell me you want to do this, and then get some people to work with you*
 
 *i know these are all pretty much 1 person jobs, but i want every group to have atleast 1 non-experienced person so they can learn*
+
+## Refactoring
+- remove all interface files and chassis files and refactor accordingly (dont touch drive subsystem for the moment)
+- combine shooter and indexing into "super" subsystem (we will do once done with most of the subsystem code i told u guys to do)
+- get rid of gamepadf310 and use xboxcontroller instead, apparently they are the same mappings (low priority)
 
 ## Old robot
 - we need to set up 2024 boilerplate for our old robot
@@ -32,7 +56,7 @@
 
 set up boilerplate (look at example subsystem, intake subsystem, and the old code for reference, as well as their website if needed)
 
-you will need to make IndexingChassis.java IndexingSubsystem.java and IndexingSubsystemInterface.java
+you will need to make IndexingSubsystem.java
 
 take in the motors
 
@@ -78,7 +102,7 @@ once we figure out the sensor stuff
 
 set up boilerplate (look at example subsystem, intake subsystem, and the old code for reference, as well as their website if needed)
 
-you will need to make ShooterChassis.java ShooterSubsystem.java and ShooterSubsystemInterface.java
+you will need to make ShooterSubsystem.java
 
 take in the motors
 
