@@ -57,7 +57,8 @@ public class RobotContainer {
                                 -MathUtil.applyDeadband(f310.getRightX(), OIConstants.kDriveDeadband),
                                 true,
                                 true),
-                                m_robotDrive));
+                                m_robotDrive
+                        ));
 
         }
 
@@ -74,11 +75,15 @@ public class RobotContainer {
                 // Mihir - Guys, this is what I was talking about when we were talking about command based programming:
 
                 // Intake Bindings (these are for temporary testing purposes, will change once IntakeCommand is made / bindings will change)
-                final Trigger A = new Trigger(new Trigger(f310::getA));
-                final Trigger B = new Trigger(new Trigger(f310::getB));
+                final Trigger A = new Trigger(f310::getA);
+                final Trigger B = new Trigger(f310::getB);
 
-                A.whileTrue(Commands.run(intakeSubsystem::intakeIn));
-                B.whileTrue(Commands.run(intakeSubsystem::intakeOut));
+                A.whileTrue(intakeSubsystem.run(intakeSubsystem::intakeIn));
+                B.whileTrue(intakeSubsystem.run(intakeSubsystem::intakeOut));
+
+                A.and(B.negate()).whileTrue(intakeSubsystem.run(intakeSubsystem::intakeIn));
+                B.and(A.negate()).whileTrue(intakeSubsystem.run(intakeSubsystem::intakeOut));
+
                 intakeSubsystem.setDefaultCommand(new RunCommand(intakeSubsystem::intakeStop, intakeSubsystem));
         }
 
