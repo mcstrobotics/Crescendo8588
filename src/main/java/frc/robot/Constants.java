@@ -142,6 +142,8 @@ public final class Constants {
     public static final int kLeftCanId = 21;
     public static final int kRightCanId = 22;
 
+    // TODO add speed constants here - Mihir
+
     // PID tuning
     // public static final double kLeftP = 1;
     // public static final double kLeftI = 0;

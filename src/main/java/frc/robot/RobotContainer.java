@@ -69,7 +69,17 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+  }
 
+  /**
+   * Use this method to define your trigger->command mappings. Triggers can be created via the
+   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary predicate, or via the named factories in 
+   * {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
+   * {@link CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4} controllers or
+   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joysticks}.
+   */
+  private void configureBindings() {
+    // swerve
     m_robotDrive.setDefaultCommand(
         // The left stick controls translation of the robot.
         // Turning is controlled by the X axis of the right stick.
@@ -81,25 +91,10 @@ public class RobotContainer {
             true),
             m_robotDrive));
 
-  }
-
-  /**
-   * Use this method to define your trigger->command mappings. Triggers can be
-   * created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
-   * an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
-   * {@link
-   * CommandXboxController
-   * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or
-   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
-   */
-  private void configureBindings() {
     final Trigger A = new Trigger(f310::getA);
     final Trigger B = new Trigger(f310::getB);
+    final Trigger X = new Trigger(f310::getX);
+    final Trigger Y = new Trigger(f310::getY);
 
     // Intake Bindings (these are for temporary testing purposes, will change once
     // IntakeCommand is made / bindings will change)
@@ -110,9 +105,6 @@ public class RobotContainer {
     B.and(A.negate()).whileTrue(intakeSubsystem.run(intakeSubsystem::intakeOut));
 
     intakeSubsystem.setDefaultCommand(new RunCommand(intakeSubsystem::intakeStop, intakeSubsystem));
-
-    final Trigger X = new Trigger(f310::getX);
-    final Trigger Y = new Trigger(f310::getY);
 
     // INDEXING
     X.whileTrue(indexingSubsystem.run(indexingSubsystem::indexIn));
