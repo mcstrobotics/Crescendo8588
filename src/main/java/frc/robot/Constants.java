@@ -160,6 +160,12 @@ public final class Constants {
     public static final int kAimingCanId = 23;
     public static final int kBottomCanId = 24;
     public static final int kTopCanId = 25;
+    
+    // SPEED:
+    public static final double kShooterBottomInSpeed = 1;
+    public static final double kShooterBottomOutSpeed = 0.5;
+    public static final double kShooterTopInSpeed = 1;
+    public static final double kShooterTopOutSpeed = 0.5;
 
     // PID tuning
     // public static final double kAimingP = 1;
