@@ -5,32 +5,26 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkLowLevel;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.OIConstants;
-import frc.robot.commands.AutonCommand;
-import frc.robot.subsystems.drive.DriveSubsystem;
-import frc.robot.usercontrol.GamepadF310;
-import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.IndexingConstants;
 
-import edu.wpi.first.wpilibj2.command.Commands;
+// import edu.wpi.first.wpilibj2.command.Commands;
 
 // CONSTANTS
-import frc.robot.Constants.IntakeConstants;
-import frc.robot.Constants.IndexingConstants;
+import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.ShooterConstants;
-
+import frc.robot.commands.AutonCommand;
+import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.Indexing;
 // SUBSYSTEMS
-import frc.robot.subsystems.intake.IntakeChassis;
-import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.indexing.IndexingChassis;
-import frc.robot.subsystems.indexing.IndexingSubsystem;
-import frc.robot.subsystems.shooter.ShooterChassis;
-import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
+import frc.robot.usercontrol.GamepadF310;
+// import edu.wpi.first.wpilibj2.command.Command;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -46,20 +40,9 @@ public class RobotContainer {
 
   private GamepadF310 f310 = new GamepadF310(0);
 
-  private IntakeSubsystem intakeSubsystem = new IntakeSubsystem(
-      new IntakeChassis(
-          new CANSparkMax(IntakeConstants.kIntakeCanId, CANSparkLowLevel.MotorType.kBrushless)));
-
-  private IndexingSubsystem indexingSubsystem = new IndexingSubsystem(
-      new IndexingChassis(
-          new CANSparkMax(IndexingConstants.kLeftCanId, CANSparkLowLevel.MotorType.kBrushless),
-          new CANSparkMax(IndexingConstants.kRightCanId, CANSparkLowLevel.MotorType.kBrushless)));
-
-  private ShooterSubsystem shooterSubsystem = new ShooterSubsystem(
-      new ShooterChassis(
-          new CANSparkMax(ShooterConstants.kBottomCanId, CANSparkLowLevel.MotorType.kBrushless),
-          new CANSparkMax(ShooterConstants.kTopCanId, CANSparkLowLevel.MotorType.kBrushless),
-          new CANSparkMax(ShooterConstants.kAimingCanId, CANSparkLowLevel.MotorType.kBrushless)));
+  private final Intake m_intake = new Intake();
+  private final Indexing m_indexing = new Indexing();
+  private final Shooter m_shooter = new Shooter();
 
   private AutonCommand autonCommand = new AutonCommand(m_robotDrive);
 
@@ -72,11 +55,17 @@ public class RobotContainer {
   }
 
   /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary predicate, or via the named factories in 
-   * {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
-   * {@link CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4} controllers or
-   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joysticks}.
+   * Use this method to define your trigger->command mappings. Triggers can be
+   * created via the
+   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
+   * an arbitrary predicate, or via the named factories in
+   * {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses
+   * for
+   * {@link CommandXboxController
+   * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4}
+   * controllers or
+   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+   * joysticks}.
    */
   private void configureBindings() {
     // swerve
@@ -98,35 +87,35 @@ public class RobotContainer {
 
     // Intake Bindings (these are for temporary testing purposes, will change once
     // IntakeCommand is made / bindings will change)
-    A.whileTrue(intakeSubsystem.run(intakeSubsystem::intakeIn));
-    B.whileTrue(intakeSubsystem.run(intakeSubsystem::intakeOut));
+    A.whileTrue(m_intake.run(m_intake::intakeIn));
+    B.whileTrue(m_intake.run(m_intake::intakeOut));
 
-    A.and(B.negate()).whileTrue(intakeSubsystem.run(intakeSubsystem::intakeIn));
-    B.and(A.negate()).whileTrue(intakeSubsystem.run(intakeSubsystem::intakeOut));
+    A.and(B.negate()).whileTrue(m_intake.run(m_intake::intakeIn));
+    B.and(A.negate()).whileTrue(m_intake.run(m_intake::intakeOut));
 
-    intakeSubsystem.setDefaultCommand(new RunCommand(intakeSubsystem::intakeStop, intakeSubsystem));
+    m_intake.setDefaultCommand(new RunCommand(m_intake::intakeStop, m_intake));
 
     // INDEXING
-    X.whileTrue(indexingSubsystem.run(indexingSubsystem::indexIn));
-    Y.whileTrue(indexingSubsystem.run(indexingSubsystem::indexOut));
+    X.whileTrue(m_indexing.run(m_indexing::indexIn));
+    Y.whileTrue(m_indexing.run(m_indexing::indexOut));
 
-    X.and(Y.negate()).whileTrue(indexingSubsystem.run(indexingSubsystem::indexIn));
-    Y.and(X.negate()).whileTrue(indexingSubsystem.run(indexingSubsystem::indexOut));
+    X.and(Y.negate()).whileTrue(m_indexing.run(m_indexing::indexIn));
+    Y.and(X.negate()).whileTrue(m_indexing.run(m_indexing::indexOut));
 
-    indexingSubsystem.setDefaultCommand(new RunCommand(indexingSubsystem::indexStop, indexingSubsystem));
+    m_indexing.setDefaultCommand(new RunCommand(m_indexing::indexStop, m_indexing));
 
     // SHOOTER
-    A.whileTrue(shooterSubsystem.run(shooterSubsystem::shooterIn));
-    B.whileTrue(shooterSubsystem.run(shooterSubsystem::shooterOut));
+    A.whileTrue(m_shooter.run(m_shooter::shooterIn));
+    B.whileTrue(m_shooter.run(m_shooter::shooterOut));
     // X.whileTrue(shooterSubsystem.run(shooterSubsystem::aimUp));
     // Y.whileTrue(shooterSubsystem.run(shooterSubsystem::aimDown));
 
-    A.and(B.negate()).whileTrue(shooterSubsystem.run(shooterSubsystem::shooterIn));
-    B.and(A.negate()).whileTrue(shooterSubsystem.run(shooterSubsystem::shooterOut));
+    A.and(B.negate()).whileTrue(m_shooter.run(m_shooter::shooterIn));
+    B.and(A.negate()).whileTrue(m_shooter.run(m_shooter::shooterOut));
     // X.and(Y.negate()).whileTrue(shooterSubsystem.run(shooterSubsystem::aimUp));
     // Y.and(X.negate()).whileTrue(shooterSubsystem.run(shooterSubsystem::aimDown));
 
-    shooterSubsystem.setDefaultCommand(new RunCommand(shooterSubsystem::shooterStop, shooterSubsystem));
+    m_shooter.setDefaultCommand(new RunCommand(m_shooter::shooterStop, m_shooter));
   }
 
   /**
