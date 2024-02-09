@@ -6,12 +6,10 @@ import com.revrobotics.CANSparkLowLevel;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // import edu.wpi.first.wpilibj2.command.Command;
+
+// CONSTANTS
 import frc.robot.Constants.IntakeConstants; // TODO swap out intake constants for indexing constants and make according constants - Mihir
 import frc.robot.Constants.IndexingConstants;
-
-// TODO, get rid of chassis file, and put all the logic hardcoded into variables into the constructor, and rename indexing subsystem to just "indexing" - Mihir
-// right now in robotcontainer we call x = new IndexingSubsystem(new IndexingChassis(motor, motor))
-// i want it so in robotcontainer we call x = new Indexing()
 
 // TODO add javadocs if u want - Mihir
 

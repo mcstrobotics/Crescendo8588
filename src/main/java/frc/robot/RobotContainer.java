@@ -4,42 +4,37 @@
 
 package frc.robot;
 
-import com.revrobotics.CANSparkMax;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.IndexingConstants;
-
 // import edu.wpi.first.wpilibj2.command.Commands;
 
 // CONSTANTS
 import frc.robot.Constants.OIConstants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.AutonCommand;
 import frc.robot.subsystems.drive.DriveSubsystem;
-import frc.robot.subsystems.Indexing;
+
 // SUBSYSTEMS
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Indexing;
 import frc.robot.subsystems.Shooter;
 import frc.robot.usercontrol.GamepadF310;
 // import edu.wpi.first.wpilibj2.command.Command;
 
 /**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in
- * the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of
- * the robot (including
+ * This class is where the bulk of the robot should be declared. Since Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
 
+  // TODO replace with CommandXboxController maybe - Mihir
   private GamepadF310 f310 = new GamepadF310(0);
 
+  // making subsystem objects
   private final Intake m_intake = new Intake();
   private final Indexing m_indexing = new Indexing();
   private final Shooter m_shooter = new Shooter();
@@ -55,17 +50,11 @@ public class RobotContainer {
   }
 
   /**
-   * Use this method to define your trigger->command mappings. Triggers can be
-   * created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
-   * an arbitrary predicate, or via the named factories in
-   * {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses
-   * for
-   * {@link CommandXboxController
-   * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4}
-   * controllers or
-   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
+   * Use this method to define your trigger->command mappings. Triggers can be created via the
+   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary predicate, or via the named factories in
+   * {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
+   * {@link CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4} controllers or
+   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joysticks}.
    */
   private void configureBindings() {
     // swerve
@@ -78,7 +67,9 @@ public class RobotContainer {
             -MathUtil.applyDeadband(f310.getRightX(), OIConstants.kDriveDeadband),
             true,
             true),
-            m_robotDrive));
+            m_robotDrive
+        )
+    );
 
     final Trigger A = new Trigger(f310::getA);
     final Trigger B = new Trigger(f310::getB);
@@ -95,7 +86,7 @@ public class RobotContainer {
 
     m_intake.setDefaultCommand(new RunCommand(m_intake::intakeStop, m_intake));
 
-    // INDEXING
+    // indexing
     X.whileTrue(m_indexing.run(m_indexing::indexIn));
     Y.whileTrue(m_indexing.run(m_indexing::indexOut));
 
@@ -104,7 +95,7 @@ public class RobotContainer {
 
     m_indexing.setDefaultCommand(new RunCommand(m_indexing::indexStop, m_indexing));
 
-    // SHOOTER
+    // shooter
     A.whileTrue(m_shooter.run(m_shooter::shooterIn));
     B.whileTrue(m_shooter.run(m_shooter::shooterOut));
     // X.whileTrue(shooterSubsystem.run(shooterSubsystem::aimUp));

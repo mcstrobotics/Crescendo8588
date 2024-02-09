@@ -12,38 +12,38 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // TODO add javadocs if u want - Mihir
 
 public class Shooter extends SubsystemBase {
-  private CANSparkMax shooterAim;
-  private CANSparkMax shooterBottom;
-  private CANSparkMax shooterTop;
+  private CANSparkMax m_aim;
+  private CANSparkMax m_bottom;
+  private CANSparkMax m_top;
 
   public Shooter() {
-    this.shooterAim = new CANSparkMax(ShooterConstants.kAimingCanId, CANSparkLowLevel.MotorType.kBrushless);
-    this.shooterBottom = new CANSparkMax(ShooterConstants.kBottomCanId, CANSparkLowLevel.MotorType.kBrushless);
-    this.shooterTop = new CANSparkMax(ShooterConstants.kTopCanId, CANSparkLowLevel.MotorType.kBrushless);
+    this.m_aim = new CANSparkMax(ShooterConstants.kAimingCanId, CANSparkLowLevel.MotorType.kBrushless);
+    this.m_bottom = new CANSparkMax(ShooterConstants.kBottomCanId, CANSparkLowLevel.MotorType.kBrushless);
+    this.m_top = new CANSparkMax(ShooterConstants.kTopCanId, CANSparkLowLevel.MotorType.kBrushless);
     setAimBrake();
     setShooterCoast();
   }
 
   // Sets aim motor to brake mode
   public void setAimBrake() {
-    shooterAim.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    m_aim.setIdleMode(CANSparkMax.IdleMode.kBrake);
   }
 
   // Set the aim motor to coast
   public void setAimCoast() {
-    shooterAim.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    m_aim.setIdleMode(CANSparkMax.IdleMode.kCoast);
   }
 
   // Set the shooter motors to brake
   public void setShooterBrake() {
-    shooterBottom.setIdleMode(CANSparkMax.IdleMode.kBrake);
-    shooterTop.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    m_bottom.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    m_top.setIdleMode(CANSparkMax.IdleMode.kBrake);
   }
 
   // Set the shooter motors to coast
   public void setShooterCoast() {
-    shooterBottom.setIdleMode(CANSparkMax.IdleMode.kCoast);
-    shooterTop.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    m_bottom.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    m_top.setIdleMode(CANSparkMax.IdleMode.kCoast);
   }
 
   // Shoot
@@ -52,8 +52,8 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Shooter Bottom Velocity", ShooterConstants.kShooterBottomOutSpeed);
     SmartDashboard.putNumber("Shooter Top Velocity", -ShooterConstants.kShooterTopOutSpeed);
 
-    shooterBottom.set(ShooterConstants.kShooterBottomOutSpeed);
-    shooterTop.set(-ShooterConstants.kShooterTopOutSpeed);
+    m_bottom.set(ShooterConstants.kShooterBottomOutSpeed);
+    m_top.set(-ShooterConstants.kShooterTopOutSpeed);
   }
 
   // Retract Shooters
@@ -62,8 +62,8 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Shooter Bottom Velocity", -ShooterConstants.kShooterBottomInSpeed);
     SmartDashboard.putNumber("Shooter Top Velocity", ShooterConstants.kShooterTopInSpeed);
 
-    shooterBottom.set(-ShooterConstants.kShooterBottomInSpeed);
-    shooterTop.set(ShooterConstants.kShooterTopInSpeed);
+    m_bottom.set(-ShooterConstants.kShooterBottomInSpeed);
+    m_top.set(ShooterConstants.kShooterTopInSpeed);
   }
 
   // Stop Shooters
@@ -72,8 +72,8 @@ public class Shooter extends SubsystemBase {
     SmartDashboard.putNumber("Shooter Bottom Velocity", 0);
     SmartDashboard.putNumber("Shooter Top Velocity", 0);
 
-    shooterBottom.set(0);
-    shooterTop.set(0);
+    m_bottom.set(0);
+    m_top.set(0);
   }
 
   // public void shoot() {
