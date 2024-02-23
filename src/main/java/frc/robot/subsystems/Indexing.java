@@ -1,12 +1,24 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.MutableMeasure.mutable;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel;
 
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // import edu.wpi.first.wpilibj2.command.Command;
-
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 // CONSTANTS
 import frc.robot.Constants.IntakeConstants; // TODO swap out intake constants for indexing constants and make according constants - Mihir
 import frc.robot.Constants.IndexingConstants;
@@ -17,12 +29,42 @@ public class Indexing extends SubsystemBase {
   private CANSparkMax m_left;
   private CANSparkMax m_right;
 
+  // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
+  private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+  // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
+  private final MutableMeasure<Distance> m_distance = mutable(Meters.of(0));
+  // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
+  private final MutableMeasure<Velocity<Distance>> m_velocity = mutable(MetersPerSecond.of(0));
+
+  SysIdRoutine routine;
+
   public Indexing() {
     m_left = new CANSparkMax(IndexingConstants.kLeftCanId, CANSparkLowLevel.MotorType.kBrushless);
     m_right = new CANSparkMax(IndexingConstants.kRightCanId, CANSparkLowLevel.MotorType.kBrushless);
 
     // Additional initialization stuff here if needed
     setCoast();
+    
+    // Creates a SysIdRoutine
+    routine = new SysIdRoutine(
+      new SysIdRoutine.Config(),
+      new SysIdRoutine.Mechanism(this::voltageIndexing, 
+          log -> {
+          log.motor("indexing")
+              .voltage(
+                  m_appliedVoltage.mut_replace(
+                    m_left.get() * RobotController.getBatteryVoltage(), Volts))
+              .linearPosition(m_distance.mut_replace(m_left.getEncoder().getPosition(), Meters))
+              .linearVelocity(
+                  m_velocity.mut_replace(m_left.getEncoder().getVelocity(), MetersPerSecond));
+          },
+      this
+    ));
+  }
+
+  private void voltageIndexing(Measure<Voltage> volts){
+    m_left.setVoltage(volts.in(Volts));
+    m_right.setVoltage(-volts.in(Volts));
   }
 
   public void setBrake() {
@@ -66,5 +108,13 @@ public class Indexing extends SubsystemBase {
 
   public void periodic() {
     // called once per run
+  }
+
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return routine.quasistatic(direction);
+  }
+
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return routine.dynamic(direction);
   }
 }

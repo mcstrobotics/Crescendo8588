@@ -34,7 +34,7 @@ public final class Constants {
     public static final double kMagnitudeSlewRate = 1.8; // percent per second (1 = 100%)
     public static final double kRotationalSlewRate = 2.0; // percent per second (1 = 100%)
 
-    // WILL NEED TO CHANGE TRACK WIDTH AND WHEEL BASE
+    // TODO !!! WILL NEED TO CHANGE TRACK WIDTH AND WHEEL BASE
     // Chassis configuration
     public static final double kTrackWidth = Units.inchesToMeters(26.5);
     // Distance between centers of right and left wheels on robot
@@ -145,15 +145,10 @@ public final class Constants {
     // TODO add speed constants here - Mihir
 
     // PID tuning
-    // public static final double kLeftP = 1;
-    // public static final double kLeftI = 0;
-    // public static final double kLeftD = 0;
-    // public static final double kLeftFF = 0;
-
-    // public static final double kRightP = 1;
-    // public static final double kRightI = 0;
-    // public static final double kRightD = 0;
-    // public static final double kRightFF = 0;
+    // public static final double kIndexingP = 1;
+    // public static final double kIndexingI = 0;
+    // public static final double kIndexingD = 0;
+    // public static final double kIndexingFF = 0;
   }
 
   /** Constants for the Shooter Subsystem */
@@ -175,15 +170,10 @@ public final class Constants {
     // public static final double kAimingD = 0;
     // public static final double kAimingFF = 0;
 
-    // public static final double kBottomP = 1;
-    // public static final double kBottomI = 0;
-    // public static final double kBottomD = 0;
-    // public static final double kBottomFF = 0;
-
-    // public static final double kTopP = 1;
-    // public static final double kTopI = 0;
-    // public static final double kTopD = 0;
-    // public static final double kTopFF = 0;
+    // public static final double kShooterP = 1;
+    // public static final double kShooterI = 0;
+    // public static final double kShooterD = 0;
+    // public static final double kShooterFF = 0;
   }
 
   public static final class OIConstants {

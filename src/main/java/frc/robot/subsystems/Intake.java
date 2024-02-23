@@ -4,10 +4,22 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import static edu.wpi.first.units.MutableMeasure.mutable;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 // import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel;
@@ -19,12 +31,41 @@ public class Intake extends SubsystemBase {
   /** Creates a new IntakeSubsystem. */
   private CANSparkMax m_intake;
 
+  // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
+  private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+  // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
+  private final MutableMeasure<Distance> m_distance = mutable(Meters.of(0));
+  // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
+  private final MutableMeasure<Velocity<Distance>> m_velocity = mutable(MetersPerSecond.of(0));
+
+  SysIdRoutine routine;
+
   public Intake() {
     this.m_intake = new CANSparkMax(IntakeConstants.kIntakeCanId, CANSparkLowLevel.MotorType.kBrushless);
 
     // Additional initialization stuff here if needed
 
     setCoast();
+
+    // Creates a SysIdRoutine
+    routine = new SysIdRoutine(
+      new SysIdRoutine.Config(),
+      new SysIdRoutine.Mechanism(this::voltageIntake, 
+          log -> {
+          log.motor("intake")
+              .voltage(
+                  m_appliedVoltage.mut_replace(
+                    m_intake.get() * RobotController.getBatteryVoltage(), Volts))
+              .linearPosition(m_distance.mut_replace(m_intake.getEncoder().getPosition(), Meters))
+              .linearVelocity(
+                  m_velocity.mut_replace(m_intake.getEncoder().getVelocity(), MetersPerSecond));
+          },
+      this
+    ));
+  }
+
+  private void voltageIntake(Measure<Voltage> volts){
+    m_intake.setVoltage(volts.in(Volts));
   }
 
   /** sets intake idlemode to brake */
@@ -67,5 +108,13 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  }
+  
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return routine.quasistatic(direction);
+  }
+
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+      return routine.dynamic(direction);
   }
 }

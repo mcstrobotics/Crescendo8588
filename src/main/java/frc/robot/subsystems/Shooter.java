@@ -2,12 +2,25 @@ package frc.robot.subsystems;
 
 import frc.robot.Constants.ShooterConstants;
 
+import static edu.wpi.first.units.MutableMeasure.mutable;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel;
 
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 // import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 // TODO add javadocs if u want - Mihir
 
@@ -16,12 +29,62 @@ public class Shooter extends SubsystemBase {
   private CANSparkMax m_bottom;
   private CANSparkMax m_top;
 
+  // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
+  private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+  // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
+  private final MutableMeasure<Distance> m_distance = mutable(Meters.of(0));
+  // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
+  private final MutableMeasure<Velocity<Distance>> m_velocity = mutable(MetersPerSecond.of(0));
+
+  SysIdRoutine routine;
+  
   public Shooter() {
     this.m_aim = new CANSparkMax(ShooterConstants.kAimingCanId, CANSparkLowLevel.MotorType.kBrushless);
     this.m_bottom = new CANSparkMax(ShooterConstants.kBottomCanId, CANSparkLowLevel.MotorType.kBrushless);
     this.m_top = new CANSparkMax(ShooterConstants.kTopCanId, CANSparkLowLevel.MotorType.kBrushless);
     setAimBrake();
     setShooterCoast();
+    
+    // Creates a SysIdRoutine
+    routine = new SysIdRoutine(
+      new SysIdRoutine.Config(),
+      new SysIdRoutine.Mechanism(this::voltageAim, 
+          log -> {
+          log.motor("aim")
+              .voltage(
+                  m_appliedVoltage.mut_replace(
+                    m_aim.get() * RobotController.getBatteryVoltage(), Volts))
+              .linearPosition(m_distance.mut_replace(m_aim.getEncoder().getPosition(), Meters))
+              .linearVelocity(
+                  m_velocity.mut_replace(m_aim.getEncoder().getVelocity(), MetersPerSecond));
+          },
+      this
+    ));
+
+    // // Creates a SysIdRoutine
+    // routine = new SysIdRoutine(
+    //   new SysIdRoutine.Config(),
+    //   new SysIdRoutine.Mechanism(this::voltageShoot, 
+    //       log -> {
+    //       log.motor("shoot")
+    //           .voltage(
+    //               m_appliedVoltage.mut_replace(
+    //                 m_top.get() * RobotController.getBatteryVoltage(), Volts))
+    //           .linearPosition(m_distance.mut_replace(m_top.getEncoder().getPosition(), Meters))
+    //           .linearVelocity(
+    //               m_velocity.mut_replace(m_top.getEncoder().getVelocity(), MetersPerSecond));
+    //       },
+    //   this
+    // ));
+  }
+
+  private void voltageAim(Measure<Voltage> volts){
+    m_aim.setVoltage(volts.in(Volts));
+  }
+
+  private void voltageShoot(Measure<Voltage> volts){
+    m_bottom.setVoltage(volts.in(Volts));
+    m_top.setVoltage(-volts.in(Volts));
   }
 
   // Sets aim motor to brake mode
@@ -97,4 +160,12 @@ public class Shooter extends SubsystemBase {
 
   // shooterAim.set(0);
   // }
+
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return routine.quasistatic(direction);
+  }
+
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+      return routine.dynamic(direction);
+  }
 }

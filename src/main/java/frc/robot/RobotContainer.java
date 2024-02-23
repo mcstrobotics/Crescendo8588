@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -13,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 // CONSTANTS
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.AutonCommand;
+import frc.robot.commands.IntakeNoteCommand;
 import frc.robot.subsystems.drive.DriveSubsystem;
 
 // SUBSYSTEMS
@@ -40,6 +42,8 @@ public class RobotContainer {
   private final Shooter m_shooter = new Shooter();
 
   private AutonCommand autonCommand = new AutonCommand(m_robotDrive);
+
+  private IntakeNoteCommand intakeNoteCommand = new IntakeNoteCommand(m_intake, m_indexing, f310);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -76,37 +80,39 @@ public class RobotContainer {
     final Trigger X = new Trigger(f310::getX);
     final Trigger Y = new Trigger(f310::getY);
 
-    // Intake Bindings (these are for temporary testing purposes, will change once
-    // IntakeCommand is made / bindings will change)
-    A.whileTrue(m_intake.run(m_intake::intakeIn));
-    B.whileTrue(m_intake.run(m_intake::intakeOut));
+    B.onTrue(intakeNoteCommand);
 
-    A.and(B.negate()).whileTrue(m_intake.run(m_intake::intakeIn));
-    B.and(A.negate()).whileTrue(m_intake.run(m_intake::intakeOut));
+    // // Intake Bindings (these are for temporary testing purposes, will change once
+    // // IntakeCommand is made / bindings will change)
+    // A.whileTrue(m_intake.run(m_intake::intakeIn));
+    // B.whileTrue(m_intake.run(m_intake::intakeOut));
 
-    m_intake.setDefaultCommand(new RunCommand(m_intake::intakeStop, m_intake));
+    // A.and(B.negate()).whileTrue(m_intake.run(m_intake::intakeIn));
+    // B.and(A.negate()).whileTrue(m_intake.run(m_intake::intakeOut));
 
-    // indexing
-    X.whileTrue(m_indexing.run(m_indexing::indexIn));
-    Y.whileTrue(m_indexing.run(m_indexing::indexOut));
+    // m_intake.setDefaultCommand(new RunCommand(m_intake::intakeStop, m_intake));
 
-    X.and(Y.negate()).whileTrue(m_indexing.run(m_indexing::indexIn));
-    Y.and(X.negate()).whileTrue(m_indexing.run(m_indexing::indexOut));
+    // // indexing
+    // X.whileTrue(m_indexing.run(m_indexing::indexIn));
+    // Y.whileTrue(m_indexing.run(m_indexing::indexOut));
 
-    m_indexing.setDefaultCommand(new RunCommand(m_indexing::indexStop, m_indexing));
+    // X.and(Y.negate()).whileTrue(m_indexing.run(m_indexing::indexIn));
+    // Y.and(X.negate()).whileTrue(m_indexing.run(m_indexing::indexOut));
 
-    // shooter
-    A.whileTrue(m_shooter.run(m_shooter::shooterIn));
-    B.whileTrue(m_shooter.run(m_shooter::shooterOut));
-    // X.whileTrue(shooterSubsystem.run(shooterSubsystem::aimUp));
-    // Y.whileTrue(shooterSubsystem.run(shooterSubsystem::aimDown));
+    // m_indexing.setDefaultCommand(new RunCommand(m_indexing::indexStop, m_indexing));
 
-    A.and(B.negate()).whileTrue(m_shooter.run(m_shooter::shooterIn));
-    B.and(A.negate()).whileTrue(m_shooter.run(m_shooter::shooterOut));
-    // X.and(Y.negate()).whileTrue(shooterSubsystem.run(shooterSubsystem::aimUp));
-    // Y.and(X.negate()).whileTrue(shooterSubsystem.run(shooterSubsystem::aimDown));
+    // // shooter
+    // A.whileTrue(m_shooter.run(m_shooter::shooterIn));
+    // B.whileTrue(m_shooter.run(m_shooter::shooterOut));
+    // // X.whileTrue(shooterSubsystem.run(shooterSubsystem::aimUp));
+    // // Y.whileTrue(shooterSubsystem.run(shooterSubsystem::aimDown));
 
-    m_shooter.setDefaultCommand(new RunCommand(m_shooter::shooterStop, m_shooter));
+    // A.and(B.negate()).whileTrue(m_shooter.run(m_shooter::shooterIn));
+    // B.and(A.negate()).whileTrue(m_shooter.run(m_shooter::shooterOut));
+    // // X.and(Y.negate()).whileTrue(shooterSubsystem.run(shooterSubsystem::aimUp));
+    // // Y.and(X.negate()).whileTrue(shooterSubsystem.run(shooterSubsystem::aimDown));
+
+    // m_shooter.setDefaultCommand(new RunCommand(m_shooter::shooterStop, m_shooter));
   }
 
   /**
