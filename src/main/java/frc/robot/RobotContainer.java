@@ -14,7 +14,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 // CONSTANTS
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.AutonCommand;
-import frc.robot.commands.IntakeNoteCommand;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.PurgeCommand;
 import frc.robot.subsystems.drive.DriveSubsystem;
 
 // SUBSYSTEMS
@@ -43,7 +44,8 @@ public class RobotContainer {
 
   private AutonCommand autonCommand = new AutonCommand(m_robotDrive);
 
-  private IntakeNoteCommand intakeNoteCommand = new IntakeNoteCommand(m_intake, m_indexing, f310);
+  private IntakeCommand intakeCommand = new IntakeCommand(m_intake, m_indexing, f310);
+  private PurgeCommand purgeCommand = new PurgeCommand(m_intake, m_indexing, m_shooter);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -80,7 +82,9 @@ public class RobotContainer {
     final Trigger X = new Trigger(f310::getX);
     final Trigger Y = new Trigger(f310::getY);
 
-    B.onTrue(intakeNoteCommand);
+    A.and(() -> !m_indexing.isLoaded()).onTrue(intakeCommand);
+    // A.and(m_indexing::isLoaded).onTrue(shootCommand);
+    X.onTrue(purgeCommand);
 
     // // Intake Bindings (these are for temporary testing purposes, will change once
     // // IntakeCommand is made / bindings will change)

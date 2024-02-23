@@ -126,8 +126,8 @@ public final class Constants {
     public static final int kIntakeCanId = 20;
 
     // SPEEDS
-    public static final double kIntakeInSpeed = 1;
-    public static final double kIntakeOutSpeed = .5;
+    public static final double kIntakeInSpeed = .8;
+    public static final double kIntakeOutSpeed = .8;
 
     // PID tuning
     // public static final double kIntakeP = 1;

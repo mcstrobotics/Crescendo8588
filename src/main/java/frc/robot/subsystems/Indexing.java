@@ -26,6 +26,8 @@ import frc.robot.Constants.IndexingConstants;
 // TODO add javadocs if u want - Mihir
 
 public class Indexing extends SubsystemBase {
+  private boolean loaded = false;
+
   private CANSparkMax m_left;
   private CANSparkMax m_right;
 
@@ -108,6 +110,18 @@ public class Indexing extends SubsystemBase {
 
   public void periodic() {
     // called once per run
+  }
+
+  public void setLoaded(boolean b) {
+    loaded = b;
+    SmartDashboard.putString("State", loaded ? "loaded" : "empty");
+    System.out.println(loaded ? "loaded" : "empty");
+  }
+
+  public boolean isLoaded() {
+    SmartDashboard.putString("State", loaded ? "loaded" : "empty");
+    System.out.println(loaded ? "loaded" : "empty");
+    return loaded;
   }
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

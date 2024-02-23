@@ -10,11 +10,11 @@ import frc.robot.usercontrol.GamepadF310;
 /**
  * 
  */
-public class IntakeNoteCommand extends SequentialCommandGroup {
+public class IntakeCommand extends SequentialCommandGroup {
   /**
    * 
    */
-  public IntakeNoteCommand(Intake intake, Indexing indexing
+  public IntakeCommand(Intake intake, Indexing indexing
     // , BeamBreak beamBreakBottom
     , GamepadF310 f310 
   ) {
@@ -29,5 +29,6 @@ public class IntakeNoteCommand extends SequentialCommandGroup {
       new WaitCommand(1.0),
       indexing.runOnce(indexing::indexStop)
     );
+    indexing.setLoaded(true);
   }
 }
