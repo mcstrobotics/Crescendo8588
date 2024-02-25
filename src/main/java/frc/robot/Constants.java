@@ -199,27 +199,36 @@ public final class Constants {
     public static final double kTopFF = 0;
   }
 
-  /** Constants for the Arm Subsystem */
-  public static final class ArmConstants {
+  /** Constants for the Wrist Constants */
+  public static final class WristConstants {
     // CAN IDs
     public static final int kArmCanId = 23;
 
-    // MEASUREMENTS
-    public static final double kBottomWheelDiameter = 3.0 / 12.0; // meters
-    public static final double kTopWheelDiameter    = 4.0 / 12.0; // meters
+    // THROUGHBORE ENCODER
+    public static final int kCountsPerRev = 8192;
 
     // UNIT CONVERSION
-    public static final double kBottomEncoderPositionFactor = kBottomWheelDiameter * Math.PI; // meters
-    public static final double kBottomEncoderVelocityFactor = (kBottomWheelDiameter * Math.PI) / 60.0; // meters per second
+    public static final double kEncoderPositionFactor = (2 * Math.PI); // radians
+    public static final double kEncoderVelocityFactor = (2 * Math.PI) / 60.0; // radians per second
     
-    public static final double kTopEncoderPositionFactor = kTopWheelDiameter * Math.PI; // meters
-    public static final double kTopEncoderVelocityFactor = (kTopWheelDiameter * Math.PI) / 60.0; // meters per second
-    
-    // PID tuning
-    public static final double kP = 1;
-    public static final double kI = 0;
-    public static final double kD = 0;
+    // // PID tuning
+    // public static final double kP = 1;
+    // public static final double kI = 0;
+    // public static final double kD = 0;
     // public static final double kFF = 0;
+
+    // These are fake gains; in actuality these must be determined individually for each robot
+    public static final double kSVolts = 1;
+    public static final double kGVolts = 1;
+    public static final double kVVoltSecondPerRad = 0.5;
+    public static final double kAVoltSecondSquaredPerRad = 0.1;
+
+    public static final double kMaxVelocityRadPerSecond = 3;
+    public static final double kMaxAccelerationRadPerSecSquared = 10;
+    
+    // The offset of the arm from the horizontal in its neutral position,
+    // measured from the horizontal
+    public static final double kWristOffsetRads = 0.5;
   }
 
   public static final class OIConstants {

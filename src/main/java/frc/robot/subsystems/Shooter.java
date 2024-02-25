@@ -155,7 +155,7 @@ public class Shooter extends SubsystemBase {
 
   private void voltageShoot(Measure<Voltage> volts){
     m_bottom.setVoltage(volts.in(Volts));
-    m_top.setVoltage(-volts.in(Volts));
+    m_top.setVoltage(volts.in(Volts));
   }
 
   // // Sets aim motor to brake mode
