@@ -21,20 +21,20 @@ public class IntakeCommand extends SequentialCommandGroup {
   ) {
     addCommands(
       Commands.parallel(
-        intake.runOnce(intake::intakeIn),
+        intake.runOnce(intake::intake),
         // new WaitUntilCommand(beamBreakBottom::isBeamBroken),
         new WaitUntilCommand(f310::getA)
       ),
       Commands.parallel(
-        indexing.runOnce(indexing::indexIn),
+        indexing.runOnce(indexing::intake),
         // new WaitUntilCommand(() -> !beamBreakBottom.isBeamBroken()),
         new WaitUntilCommand(() -> !f310.getA())
       ),
       Commands.parallel(
-        intake.runOnce(intake::intakeStop),
+        intake.runOnce(intake::stop),
         new WaitCommand(1.0)
       ),
-      indexing.runOnce(indexing::indexStop)
+      indexing.runOnce(indexing::stop)
     );
     indexing.setLoaded(true);
   }

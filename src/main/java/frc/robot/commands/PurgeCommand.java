@@ -18,17 +18,17 @@ public class PurgeCommand extends SequentialCommandGroup {
     addCommands (
         // expelling all objects from the robot
         Commands.parallel(
-          intake.runOnce(intake::intakeIn), 
-          indexing.runOnce(indexing::indexIn), 
-          shooter.runOnce(shooter::shooterOut)
+          intake.runOnce(intake::intake), 
+          indexing.runOnce(indexing::intake), 
+          shooter.runOnce(shooter::intake)
         ),
         // running the intake, index, and shooter for 5 seconds
         new WaitCommand(5.0),
         // stopping everything
         Commands.parallel(
-          intake.runOnce(intake::intakeStop),
-          indexing.runOnce(indexing::indexStop),
-          shooter.runOnce(shooter::shooterStop)
+          intake.runOnce(intake::stop),
+          indexing.runOnce(indexing::stop),
+          shooter.runOnce(shooter::stop)
         )
     );
     indexing.setLoaded(false);

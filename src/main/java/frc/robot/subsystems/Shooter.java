@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import frc.robot.Constants.MotorContants;
 import frc.robot.Constants.ShooterConstants;
 
 import static edu.wpi.first.units.MutableMeasure.mutable;
@@ -8,6 +9,8 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel;
 
 import edu.wpi.first.units.Distance;
@@ -29,6 +32,12 @@ public class Shooter extends SubsystemBase {
   private CANSparkMax m_bottom;
   private CANSparkMax m_top;
 
+  private RelativeEncoder m_bottomEncoder;
+  private RelativeEncoder m_topEncoder;
+
+  private SparkPIDController m_bottomPIDController;
+  private SparkPIDController m_topPIDController;
+
   // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
   private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
   // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
@@ -40,10 +49,56 @@ public class Shooter extends SubsystemBase {
   
   public Shooter() {
     this.m_aim = new CANSparkMax(ShooterConstants.kAimingCanId, CANSparkLowLevel.MotorType.kBrushless);
-    this.m_bottom = new CANSparkMax(ShooterConstants.kBottomCanId, CANSparkLowLevel.MotorType.kBrushless);
-    this.m_top = new CANSparkMax(ShooterConstants.kTopCanId, CANSparkLowLevel.MotorType.kBrushless);
-    setAimBrake();
-    setShooterCoast();
+
+    m_bottom = new CANSparkMax(ShooterConstants.kBottomCanId, CANSparkLowLevel.MotorType.kBrushless);
+    m_top = new CANSparkMax(ShooterConstants.kTopCanId, CANSparkLowLevel.MotorType.kBrushless);
+
+    // Factory reset, so we get the SPARKS MAX to a known state before configuring them. Useful in case a SPARK MAX is swapped out.
+    m_bottom.restoreFactoryDefaults();
+    m_top.restoreFactoryDefaults();
+
+    m_bottom.setInverted(false);
+    m_top.setInverted(true);
+
+    // Setup encoders and PID controllers
+    m_bottomEncoder = m_bottom.getEncoder();
+    m_topEncoder = m_top.getEncoder();
+
+    // m_bottomPIDController = m_bottom.getPIDController();
+    // m_bottomPIDController.setFeedbackDevice(m_bottomEncoder);
+    // m_topPIDController = m_top.getPIDController();
+    // m_topPIDController.setFeedbackDevice(m_topEncoder);
+
+    // m_bottomEncoder.setPositionConversionFactor(ShooterConstants.kBottomEncoderPositionFactor);
+    // m_bottomEncoder.setVelocityConversionFactor(ShooterConstants.kBottomEncoderVelocityFactor);
+    // m_topEncoder.setPositionConversionFactor(ShooterConstants.kTopEncoderPositionFactor);
+    // m_topEncoder.setVelocityConversionFactor(ShooterConstants.kTopEncoderVelocityFactor);
+
+    // m_bottomPIDController.setP( ShooterConstants.kBottomP);
+    // m_bottomPIDController.setI( ShooterConstants.kBottomI);
+    // m_bottomPIDController.setD( ShooterConstants.kBottomD);
+    // m_bottomPIDController.setFF(ShooterConstants.kBottomFF);
+    // m_bottomPIDController.setOutputRange(-1, 1);
+    
+    // m_topPIDController.setP( ShooterConstants.kTopP);
+    // m_topPIDController.setI( ShooterConstants.kTopI);
+    // m_topPIDController.setD( ShooterConstants.kTopD);
+    // m_topPIDController.setFF(ShooterConstants.kTopFF);
+    // m_topPIDController.setOutputRange(-1, 1);
+
+    // setCoast();
+    // m_bottom.setSmartCurrentLimit(MotorContants.kMotorCurrentLimit);
+    // m_top.setSmartCurrentLimit(MotorContants.kMotorCurrentLimit);
+
+    // // Save the SPARK MAX configurations. If a SPARK MAX browns out during operation, it will maintain the above configurations.
+    // m_bottom.burnFlash();
+    // m_top.burnFlash();
+
+    // m_bottomEncoder.setPosition(0);
+    // m_topEncoder.setPosition(0);   
+    
+    // setAimBrake();
+    // setShooterCoast();
     
     // Creates a SysIdRoutine
     routine = new SysIdRoutine(
@@ -66,13 +121,29 @@ public class Shooter extends SubsystemBase {
     //   new SysIdRoutine.Config(),
     //   new SysIdRoutine.Mechanism(this::voltageShoot, 
     //       log -> {
-    //       log.motor("shoot")
+    //       log.motor("shoot-top")
     //           .voltage(
     //               m_appliedVoltage.mut_replace(
     //                 m_top.get() * RobotController.getBatteryVoltage(), Volts))
     //           .linearPosition(m_distance.mut_replace(m_top.getEncoder().getPosition(), Meters))
     //           .linearVelocity(
     //               m_velocity.mut_replace(m_top.getEncoder().getVelocity(), MetersPerSecond));
+    //       },
+    //   this
+    // ));
+
+    // // Creates a SysIdRoutine
+    // routine = new SysIdRoutine(
+    //   new SysIdRoutine.Config(),
+    //   new SysIdRoutine.Mechanism(this::voltageShoot, 
+    //       log -> {
+    //       log.motor("shoot-bottom")
+    //           .voltage(
+    //               m_appliedVoltage.mut_replace(
+    //                 m_bottom.get() * RobotController.getBatteryVoltage(), Volts))
+    //           .linearPosition(m_distance.mut_replace(m_bottom.getEncoder().getPosition(), Meters))
+    //           .linearVelocity(
+    //               m_velocity.mut_replace(m_bottom.getEncoder().getVelocity(), MetersPerSecond));
     //       },
     //   this
     // ));
@@ -87,56 +158,68 @@ public class Shooter extends SubsystemBase {
     m_top.setVoltage(-volts.in(Volts));
   }
 
-  // Sets aim motor to brake mode
-  public void setAimBrake() {
-    m_aim.setIdleMode(CANSparkMax.IdleMode.kBrake);
-  }
+  // // Sets aim motor to brake mode
+  // public void setAimBrake() {
+  //   m_aim.setIdleMode(CANSparkMax.IdleMode.kBrake);
+  // }
 
-  // Set the aim motor to coast
-  public void setAimCoast() {
-    m_aim.setIdleMode(CANSparkMax.IdleMode.kCoast);
-  }
+  // // Set the aim motor to coast
+  // public void setAimCoast() {
+  //   m_aim.setIdleMode(CANSparkMax.IdleMode.kCoast);
+  // }
 
   // Set the shooter motors to brake
-  public void setShooterBrake() {
+  public void setBrake() {
     m_bottom.setIdleMode(CANSparkMax.IdleMode.kBrake);
     m_top.setIdleMode(CANSparkMax.IdleMode.kBrake);
   }
 
   // Set the shooter motors to coast
-  public void setShooterCoast() {
+  public void setCoast() {
     m_bottom.setIdleMode(CANSparkMax.IdleMode.kCoast);
     m_top.setIdleMode(CANSparkMax.IdleMode.kCoast);
   }
 
   // Shoot
-  public void shooterOut() {
-    SmartDashboard.putString("Shooter State", "Out");
-    SmartDashboard.putNumber("Shooter Bottom Velocity", ShooterConstants.kShooterBottomOutSpeed);
-    SmartDashboard.putNumber("Shooter Top Velocity", -ShooterConstants.kShooterTopOutSpeed);
+  public void shoot() {
+    SmartDashboard.putString("Shooter State", "shoot");
 
-    m_bottom.set(ShooterConstants.kShooterBottomOutSpeed);
-    m_top.set(-ShooterConstants.kShooterTopOutSpeed);
+    m_bottom.set(.8);
+    m_top.set(.8);
+
+    // m_bottomPIDController.setReference(MotorContants.kShootingSpeed, CANSparkMax.ControlType.kVelocity);
+    // m_topPIDController.setReference(MotorContants.kShootingSpeed, CANSparkMax.ControlType.kVelocity);
   }
 
-  // Retract Shooters
-  public void shooterIn() {
-    SmartDashboard.putString("Shooter State", "In");
-    SmartDashboard.putNumber("Shooter Bottom Velocity", -ShooterConstants.kShooterBottomInSpeed);
-    SmartDashboard.putNumber("Shooter Top Velocity", ShooterConstants.kShooterTopInSpeed);
+  public void intake() {
+    SmartDashboard.putString("Shooter State", "intake");
 
-    m_bottom.set(-ShooterConstants.kShooterBottomInSpeed);
-    m_top.set(ShooterConstants.kShooterTopInSpeed);
+    m_bottom.set(.8);
+    m_top.set(.8);
+    
+    // m_bottomPIDController.setReference(MotorContants.kIntakeSpeed, CANSparkMax.ControlType.kVelocity);
+    // m_topPIDController.setReference(MotorContants.kIntakeSpeed, CANSparkMax.ControlType.kVelocity);
+  }
+
+  public void shooterIntake() {
+    SmartDashboard.putString("Shooter State", "shooter-intake");
+
+    m_bottom.set(-.8);
+    m_top.set(-.8);
+    
+    // m_bottomPIDController.setReference(-MotorContants.kIntakeSpeed, CANSparkMax.ControlType.kVelocity);
+    // m_topPIDController.setReference(-MotorContants.kIntakeSpeed, CANSparkMax.ControlType.kVelocity);
   }
 
   // Stop Shooters
-  public void shooterStop() {
-    SmartDashboard.putString("Shooter State", "Stopped");
-    SmartDashboard.putNumber("Shooter Bottom Velocity", 0);
-    SmartDashboard.putNumber("Shooter Top Velocity", 0);
+  public void stop() {
+    SmartDashboard.putString("Shooter State", "stopped");
 
     m_bottom.set(0);
     m_top.set(0);
+
+    // m_bottomPIDController.setReference(0, CANSparkMax.ControlType.kVelocity);
+    // m_topPIDController.setReference(0, CANSparkMax.ControlType.kVelocity);
   }
 
   // public void shoot() {
@@ -160,6 +243,17 @@ public class Shooter extends SubsystemBase {
 
   // shooterAim.set(0);
   // }
+
+  @Override
+  public void periodic() {
+    SmartDashboard.putNumber("Shooter Top Encoder Position", m_topEncoder.getPosition());
+    SmartDashboard.putNumber("Shooter Top Encoder Velocity", m_topEncoder.getVelocity());
+    SmartDashboard.putNumber("Shooter Top Temp", m_top.getMotorTemperature());
+
+    SmartDashboard.putNumber("Shooter Bottom Encoder Position", m_bottomEncoder.getPosition());
+    SmartDashboard.putNumber("Shooter Bottom Encoder Velocity", m_bottomEncoder.getVelocity());
+    SmartDashboard.putNumber("Shooter Bottom Temp", m_bottom.getMotorTemperature());
+  }
 
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return routine.quasistatic(direction);

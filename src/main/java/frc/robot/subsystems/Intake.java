@@ -22,14 +22,19 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel;
 
 // CONSTANTS
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.MotorContants;
 
 public class Intake extends SubsystemBase {
   /** Creates a new IntakeSubsystem. */
   private CANSparkMax m_intake;
+  private RelativeEncoder m_intakeEncoder;
+  private SparkPIDController m_intakePIDController;
 
   // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
   private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
@@ -43,7 +48,31 @@ public class Intake extends SubsystemBase {
   public Intake() {
     this.m_intake = new CANSparkMax(IntakeConstants.kIntakeCanId, CANSparkLowLevel.MotorType.kBrushless);
 
-    // Additional initialization stuff here if needed
+    // Factory reset, so we get the SPARK MAX to a known state before configuring them. Useful in case a SPARK MAX is swapped out.
+    m_intake.restoreFactoryDefaults();
+
+    m_intakeEncoder = m_intake.getEncoder();
+    
+    // m_intakePIDController = m_intake.getPIDController();
+    // m_intakePIDController.setFeedbackDevice(m_intakeEncoder);
+
+    // m_intakeEncoder.setPositionConversionFactor(IntakeConstants.kBottomEncoderPositionFactor);
+    // m_intakeEncoder.setVelocityConversionFactor(IntakeConstants.kBottomEncoderVelocityFactor);
+
+    // m_intakePIDController.setP( IntakeConstants.kP);
+    // m_intakePIDController.setI( IntakeConstants.kI);
+    // m_intakePIDController.setD( IntakeConstants.kD);
+    // m_intakePIDController.setFF(IntakeConstants.kFF);
+    // // m_intakePIDController.setOutputRange(IntakeConstants.kIntakeMinOutput, IntakeConstants.kIntakeMaxOutput);
+    // m_intakePIDController.setOutputRange(-1, 1);
+
+    // setCoast();
+    // m_intake.setSmartCurrentLimit(MotorContants.kMotorCurrentLimit);
+
+    // // Save the SPARK MAX configurations. If a SPARK MAX browns out during operation, it will maintain the above configurations.
+    // m_intake.burnFlash();
+
+    // m_intakeEncoder.setPosition(0);
 
     setCoast();
 
@@ -79,35 +108,38 @@ public class Intake extends SubsystemBase {
   }
 
   /** move intake motor to suck the note in */
-  public void intakeIn() {
-    // System.out.println("Intake in");
-    SmartDashboard.putString("Intake State", "In");
-    SmartDashboard.putNumber("Intake Velocity", IntakeConstants.kIntakeInSpeed);
+  public void intake() {
+    SmartDashboard.putString("Intake State", "intake");
 
-    m_intake.set(IntakeConstants.kIntakeInSpeed);
-  }
+    m_intake.set(.8);
 
-  /** move intake motor to push the note out */
-  public void intakeOut() {
-    // System.out.println("Intake out");
-    SmartDashboard.putString("Intake State", "Out");
-    SmartDashboard.putNumber("Intake Velocity", -IntakeConstants.kIntakeOutSpeed);
-
-    m_intake.set(-IntakeConstants.kIntakeOutSpeed);
+    // m_intakePIDController.setReference(MotorContants.kIntakeSpeed, CANSparkMax.ControlType.kVelocity);
   }
 
   /** stop intake motor */
-  public void intakeStop() {
-    // System.out.println("Intake stopped");
-    SmartDashboard.putString("Intake State", "Stopped");
-    SmartDashboard.putNumber("Intake Velocity", 0);
+  public void stop() {
+    SmartDashboard.putString("Intake State", "stop");
 
     m_intake.set(0);
+
+    // m_intakePIDController.setReference(0, CANSparkMax.ControlType.kVelocity);
   }
+  
+  // /** move intake motor to push the note out */
+  // public void intakeOut() {
+  //   // System.out.println("Intake out");
+  //   SmartDashboard.putString("Intake State", "Out");
+
+  //   m_intake.set(-.8);
+
+  //   // m_intakePIDController.setReference(-MotorContants.kIntakeSpeed, CANSparkMax.ControlType.kVelocity);
+  // }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Intake Encoder Position", m_intakeEncoder.getPosition());
+    SmartDashboard.putNumber("Intake Encoder Velocity", m_intakeEncoder.getVelocity());
+    SmartDashboard.putNumber("Intake Temp", m_intake.getMotorTemperature());
   }
   
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
@@ -115,6 +147,6 @@ public class Intake extends SubsystemBase {
   }
 
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-      return routine.dynamic(direction);
+    return routine.dynamic(direction);
   }
 }

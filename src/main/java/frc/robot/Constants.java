@@ -117,23 +117,32 @@ public final class Constants {
     public static final int kDrivingMotorCurrentLimit = 50; // amps
     public static final int kTurningMotorCurrentLimit = 20; // amps
   }
+  
+  public static final class MotorContants {
+    public static final double kArmSpeed      = 0.5; // meters per second
+    public static final double kIntakeSpeed   = 1.0; // meters per second
+    public static final double kShootingSpeed = 3.0; // meters per second
 
-  // Whenever you add a constant, please put a comment for what its units are/what it is for
+    public static final int kMotorCurrentLimit = 50; // amps
+  }
 
   /** Constants for the Intake Subsystem */
   public static final class IntakeConstants {
     // CAN IDs
     public static final int kIntakeCanId = 20;
 
-    // SPEEDS
-    public static final double kIntakeInSpeed = .8;
-    public static final double kIntakeOutSpeed = .8;
+    // MEASUREMENTS !!!!!!!!! NOT FINAL
+    public static final double kWheelDiameter = 4.0 / 12.0; // meters
+
+    // UNIT CONVERSION
+    public static final double kEncoderPositionFactor = kWheelDiameter * Math.PI; // meters
+    public static final double kEncoderVelocityFactor = (kWheelDiameter * Math.PI) / 60.0; // meters per second
 
     // PID tuning
-    // public static final double kIntakeP = 1;
-    // public static final double kIntakeI = 0;
-    // public static final double kIntakeD = 0;
-    // public static final double kIntakeFF = 0;
+    public static final double kP  = 1;
+    public static final double kI  = 0;
+    public static final double kD  = 0;
+    public static final double kFF = 0;
   }
 
   /** Constants for the Indexing Subsystem */
@@ -142,38 +151,75 @@ public final class Constants {
     public static final int kLeftCanId = 21;
     public static final int kRightCanId = 22;
 
-    // TODO add speed constants here - Mihir
+    // MEASUREMENTS !!!!!!!!! NOT FINAL
+    public static final double kWheelDiameter = 3.0 / 12.0; // meters
+
+    // UNIT CONVERSION
+    public static final double kLeftEncoderPositionFactor = kWheelDiameter * Math.PI; // meters
+    public static final double kLeftEncoderVelocityFactor = (kWheelDiameter * Math.PI) / 60.0; // meters per second
+
+    public static final double kRightEncoderPositionFactor = kLeftEncoderPositionFactor; // meters
+    public static final double kRightEncoderVelocityFactor = kLeftEncoderVelocityFactor; // meters per second
 
     // PID tuning
-    // public static final double kIndexingP = 1;
-    // public static final double kIndexingI = 0;
-    // public static final double kIndexingD = 0;
-    // public static final double kIndexingFF = 0;
+    public static final double kP  = 1;
+    public static final double kI  = 0;
+    public static final double kD  = 0;
+    public static final double kFF = 0;
   }
 
   /** Constants for the Shooter Subsystem */
   public static final class ShooterConstants {
     // CAN IDs
     public static final int kAimingCanId = 23;
+
     public static final int kBottomCanId = 24;
     public static final int kTopCanId = 25;
-    
-    // SPEED:
-    public static final double kShooterBottomInSpeed = 1;
-    public static final double kShooterBottomOutSpeed = 0.5;
-    public static final double kShooterTopInSpeed = 1;
-    public static final double kShooterTopOutSpeed = 0.5;
+
+    // MEASUREMENTS
+    public static final double kBottomWheelDiameter = 3.0 / 12.0; // meters
+    public static final double kTopWheelDiameter    = 4.0 / 12.0; // meters
+
+    // UNIT CONVERSION
+    public static final double kBottomEncoderPositionFactor = kBottomWheelDiameter * Math.PI; // meters
+    public static final double kBottomEncoderVelocityFactor = (kBottomWheelDiameter * Math.PI) / 60.0; // meters per second
+
+    public static final double kTopEncoderPositionFactor = kTopWheelDiameter * Math.PI; // meters
+    public static final double kTopEncoderVelocityFactor = (kTopWheelDiameter * Math.PI) / 60.0; // meters per second
 
     // PID tuning
-    // public static final double kAimingP = 1;
-    // public static final double kAimingI = 0;
-    // public static final double kAimingD = 0;
-    // public static final double kAimingFF = 0;
+    public static final double kBottomP  = 1;
+    public static final double kBottomI  = 0;
+    public static final double kBottomD  = 0;
+    public static final double kBottomFF = 0;
 
-    // public static final double kShooterP = 1;
-    // public static final double kShooterI = 0;
-    // public static final double kShooterD = 0;
-    // public static final double kShooterFF = 0;
+    public static final double kTopP  = 1;
+    public static final double kTopI  = 0;
+    public static final double kTopD  = 0;
+    public static final double kTopFF = 0;
+  }
+
+  /** Constants for the Arm Subsystem */
+  public static final class ArmConstants {
+    // CAN IDs
+    public static final int kArmCanId = 23;
+
+    // MEASUREMENTS
+    public static final double kBottomWheelDiameter = 3.0 / 12.0; // meters
+    public static final double kTopWheelDiameter    = 4.0 / 12.0; // meters
+
+    // UNIT CONVERSION
+    public static final double kBottomEncoderPositionFactor = kBottomWheelDiameter * Math.PI; // meters
+    public static final double kBottomEncoderVelocityFactor = (kBottomWheelDiameter * Math.PI) / 60.0; // meters per second
+    
+    public static final double kTopEncoderPositionFactor = kTopWheelDiameter * Math.PI; // meters
+    public static final double kTopEncoderVelocityFactor = (kTopWheelDiameter * Math.PI) / 60.0; // meters per second
+    
+    // PID tuning
+    public static final double kP = 1;
+    public static final double kI = 0;
+    public static final double kD = 0;
+    // public static final double kFF = 0;
   }
 
   public static final class OIConstants {

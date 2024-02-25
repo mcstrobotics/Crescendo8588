@@ -81,7 +81,8 @@ public class RobotContainer {
     final Trigger X = new Trigger(f310::getX);
     final Trigger Y = new Trigger(f310::getY);
 
-    A.and(() -> !m_indexing.isLoaded()).onTrue(intakeCommand);
+    B.onTrue(intakeCommand);
+    // A.and(() -> !m_indexing.isLoaded()).onTrue(intakeCommand);
     // A.and(m_indexing::isLoaded).onTrue(shootCommand);
     X.onTrue(purgeCommand);
 
