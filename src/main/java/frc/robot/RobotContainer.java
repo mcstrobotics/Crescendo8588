@@ -20,6 +20,7 @@ import frc.robot.subsystems.drive.DriveSubsystem;
 
 // SUBSYSTEMS
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.BeamBreak;
 import frc.robot.subsystems.Indexing;
 import frc.robot.subsystems.Shooter;
 import frc.robot.usercontrol.GamepadF310;
@@ -40,6 +41,9 @@ public class RobotContainer {
   private final Intake m_intake = new Intake();
   private final Indexing m_indexing = new Indexing();
   private final Shooter m_shooter = new Shooter();
+
+  // private final BeamBreak m_beamBreakBottom = new BeamBreak(0);
+  // private final BeamBreak m_beamBreakTop = new BeamBreak(1);
 
   private AutonCommand autonCommand = new AutonCommand(m_robotDrive);
 
