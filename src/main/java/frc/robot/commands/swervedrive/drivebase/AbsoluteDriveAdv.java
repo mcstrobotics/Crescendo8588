@@ -149,6 +149,4 @@ public class AbsoluteDriveAdv extends Command
   {
     return false;
   }
-
-
 }

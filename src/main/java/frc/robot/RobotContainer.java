@@ -14,7 +14,9 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 // CONSTANTS
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.AutonCommand;
-
+import frc.robot.commands.PurgeCommand;
+import frc.robot.commands.ShootCommand;
+import frc.robot.commands.ShooterIntakeCommand;
 // SUBSYSTEMS
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Indexing;
@@ -59,6 +61,9 @@ public class RobotContainer {
   private final Indexing m_indexing = new Indexing();
   private final Shooter m_shooter = new Shooter();
 
+  private final PurgeCommand m_purgeCommand = new PurgeCommand(m_intake, m_indexing, m_shooter);
+  // private final ShootCommand m_shootCommand = new ShootCommand(m_intake, m_indexing, m_shooter, null);
+  // private final ShooterIntakeCommand m_shooterIntakeCommand = new ShooterIntakeCommand(m_indexing, m_shooter, null);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -136,46 +141,14 @@ public class RobotContainer {
     // final Trigger X = new Trigger(f310::getX);
     // final Trigger Y = new Trigger(f310::getY);
 
-    driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-    driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
-    driverXbox.b().whileTrue(
-        Commands.deferredProxy(() -> drivebase.driveToPose(
-                                   new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
-                              ));
+    // driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+    // driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
+    // driverXbox.b().whileTrue(
+    //     Commands.deferredProxy(() -> drivebase.driveToPose(
+    //                                new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
+    //                           ));
 
-    //B.onTrue(intakeNoteCommand);
-
-    // // Intake Bindings (these are for temporary testing purposes, will change once
-    // // IntakeCommand is made / bindings will change)
-    // A.whileTrue(m_intake.run(m_intake::intakeIn));
-    // B.whileTrue(m_intake.run(m_intake::intakeOut));
-
-    // A.and(B.negate()).whileTrue(m_intake.run(m_intake::intakeIn));
-    // B.and(A.negate()).whileTrue(m_intake.run(m_intake::intakeOut));
-
-    // m_intake.setDefaultCommand(new RunCommand(m_intake::intakeStop, m_intake));
-
-    // // indexing
-    // X.whileTrue(m_indexing.run(m_indexing::indexIn));
-    // Y.whileTrue(m_indexing.run(m_indexing::indexOut));
-
-    // X.and(Y.negate()).whileTrue(m_indexing.run(m_indexing::indexIn));
-    // Y.and(X.negate()).whileTrue(m_indexing.run(m_indexing::indexOut));
-
-    // m_indexing.setDefaultCommand(new RunCommand(m_indexing::indexStop, m_indexing));
-
-    // // shooter
-    // A.whileTrue(m_shooter.run(m_shooter::shooterIn));
-    // B.whileTrue(m_shooter.run(m_shooter::shooterOut));
-    // // X.whileTrue(shooterSubsystem.run(shooterSubsystem::aimUp));
-    // // Y.whileTrue(shooterSubsystem.run(shooterSubsystem::aimDown));
-
-    // A.and(B.negate()).whileTrue(m_shooter.run(m_shooter::shooterIn));
-    // B.and(A.negate()).whileTrue(m_shooter.run(m_shooter::shooterOut));
-    // // X.and(Y.negate()).whileTrue(shooterSubsystem.run(shooterSubsystem::aimUp));
-    // // Y.and(X.negate()).whileTrue(shooterSubsystem.run(shooterSubsystem::aimDown));
-
-    // m_shooter.setDefaultCommand(new RunCommand(m_shooter::shooterStop, m_shooter));
+    driverXbox.y().whileTrue(drivebase.sysIdDriveMotorCommand());
   }
 
   /**
@@ -186,6 +159,5 @@ public class RobotContainer {
   public Command getAutonCommand() {
     // autonCommand will run in autonomous
     return drivebase.getAutonomousCommand("New Auto");
-
   }
 }

@@ -9,14 +9,14 @@
 
 | Component               | CAN ID |
 |-------------------------|--------|
-| Front Left Driving      | 11     |
-| Rear Left Driving       | 13     |
-| Front Right Driving     | 15     |
-| Rear Right Driving      | 17     |
 | Front Left Turning      | 10     |
+| Front Left Driving      | 11     |
 | Rear Left Turning       | 12     |
+| Rear Left Driving       | 13     |
 | Front Right Turning     | 14     |
+| Front Right Driving     | 15     |
 | Rear Right Turning      | 16     |
+| Rear Right Driving      | 17     |
 | Intake Motor            | 20     |
 | Indexing Motor Left     | 21     |
 | Indexing Motor Right    | 22     |
@@ -30,8 +30,15 @@ we need YAGSL set up
 - pathplanner
 - vision auton
 
-we need to set up sysidroutines for our swerve
+we need to set up sysidroutines for our swerve DONE
+we need to code the arm DONE
 
-we need to code the arm
+we need to set up pid configurable stuff -Ethan
+we need to merge Vision.java - Vision kids
 
-we need to run sysid on everythin
+we need to test swerve and get it working - Tuesday
+we need to run sysid on everything - When bot is done
+we need to test everything out - When bot is done
+- commands
+- swerve turning
+
