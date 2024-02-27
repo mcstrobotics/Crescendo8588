@@ -54,7 +54,7 @@ public class RobotContainer {
 
   // replaced with CommandXboxController
   // private GamepadF310 f310 = new GamepadF310(0);
-  final CommandXboxController driverXbox = new CommandXboxController(0);
+  final CommandXboxController driverXbox = new CommandXboxController(1);
 
   // making subsystem objects
   private final Intake m_intake = new Intake();
@@ -111,7 +111,10 @@ public class RobotContainer {
         () -> -driverXbox.getRawAxis(2));
 
     drivebase.setDefaultCommand(
-        !RobotBase.isSimulation() ? driveFieldOrientedDirectAngle : driveFieldOrientedDirectAngleSim);
+        !RobotBase.isSimulation() ? 
+        driveFieldOrientedDirectAngle
+        // closedAbsoluteDriveAdv
+         : driveFieldOrientedDirectAngleSim);
   }
 
   /**
