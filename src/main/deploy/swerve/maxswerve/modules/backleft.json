@@ -10,7 +10,7 @@
     "canbus": null
   },
   "encoder": {
-    "type": "throughbore",
+    "type": "attached",
     "id": 0,
     "canbus": null
   },
@@ -18,7 +18,7 @@
     "drive": false,
     "angle": true
   },
-  "absoluteEncoderOffset": 301.3301969,
+  "absoluteEncoderOffset": 0,
   "location": {
     "front": -12.5,
     "left": 12.5
