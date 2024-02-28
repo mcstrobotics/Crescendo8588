@@ -19,6 +19,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
@@ -31,7 +32,10 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
+import swervelib.SwerveModule;
 import swervelib.math.SwerveMath;
+import swervelib.motors.SwerveMotor;
+import swervelib.parser.PIDFConfig;
 import swervelib.parser.SwerveControllerConfiguration;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
@@ -49,6 +53,9 @@ public class SwerveSubsystem extends SubsystemBase
    * Maximum speed of the robot in meters per second, used to limit acceleration.
    */
   public        double      maximumSpeed = Units.feetToMeters(14.5);
+
+  //outside of constructor 
+  private SwerveModule[] modules;
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -85,6 +92,13 @@ public class SwerveSubsystem extends SubsystemBase
     swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
     swerveDrive.setCosineCompensator(!SwerveDriveTelemetry.isSimulation); // Disables cosine compensation for simulations since it causes discrepancies not seen in real life.
     setupPathPlanner();
+
+    // 
+    modules = swerveDrive.getModules();
+    SmartDashboard.putNumber("Turning P",  0.0020645);
+    SmartDashboard.putNumber("Turning I",  0.0);
+    SmartDashboard.putNumber("Turning D",  0.0); 
+    SmartDashboard.putNumber("Turning FF", 0.0);
   }
 
   /**
@@ -321,9 +335,41 @@ public class SwerveSubsystem extends SubsystemBase
     swerveDrive.drive(velocity);
   }
 
+  // TODO refactor this out into a class for future years maybe - Mihir
+  private double oldP  = 0.0020645;
+  private double oldI  = 0.0;
+  private double oldD  = 0.0;
+  private double oldFF = 0.0;
+
   @Override
   public void periodic()
   {
+    double currentP  = SmartDashboard.getNumber("Turning P",  0.0020645);
+    double currentI  = SmartDashboard.getNumber("Turning I",  0.0);
+    double currentD  = SmartDashboard.getNumber("Turning D",  0.0); 
+    double currentFF = SmartDashboard.getNumber("Turning FF", 0.0);
+
+    if (
+      currentP  != oldP ||
+      currentI  != oldI ||
+      currentD  != oldD ||
+      currentFF != oldFF
+    ) {
+      // System.out.println("PID updated");
+      for(int i = 0; i < modules.length; i++)
+        modules[i].getAngleMotor().configurePIDF(
+          new PIDFConfig(
+            currentP, 
+            currentI, 
+            currentD, 
+            currentFF
+          ));
+    }
+    
+    oldP  = currentP;
+    oldI  = currentI;
+    oldD  = currentD;
+    oldFF = currentFF;
   }
 
   @Override
