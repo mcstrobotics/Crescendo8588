@@ -4,53 +4,52 @@
 
 package frc.robot;
 
+import java.io.File;
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 // import edu.wpi.first.wpilibj2.command.Commands;
-
-// CONSTANTS
-import frc.robot.Constants.OIConstants;
-import frc.robot.commands.AutonCommand;
+import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.PurgeCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.ShooterIntakeCommand;
+import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
+import frc.robot.commands.swervedrive.drivebase.VisionTest;
+import frc.robot.subsystems.BeamBreak;
+import frc.robot.subsystems.Indexing;
 // SUBSYSTEMS
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Indexing;
 import frc.robot.subsystems.Shooter;
 //import frc.robot.usercontrol.GamepadF310;
-
-// YAGSL Imports
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.swervedrive.drivebase.AbsoluteDriveAdv;
+import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-import swervelib.SwerveDrive;
-import swervelib.parser.SwerveParser;
 
-import java.io.File;
 // import edu.wpi.first.wpilibj2.command.Command;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
   // OLD Swerve stuff
-  //private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  //private AutonCommand autonCommand = new AutonCommand(m_robotDrive);
+  // private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  // private AutonCommand autonCommand = new AutonCommand(m_robotDrive);
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
-                                                                         "/swerve/maxswerve/"));
+      "/swerve/maxswerve/"));
 
   // replaced with CommandXboxController
   // private GamepadF310 f310 = new GamepadF310(0);
@@ -60,10 +59,20 @@ public class RobotContainer {
   private final Intake m_intake = new Intake();
   private final Indexing m_indexing = new Indexing();
   private final Shooter m_shooter = new Shooter();
+  private final Vision m_vision = new Vision(drivebase);
 
+  private final BeamBreak m_beamBottom = new BeamBreak(0);
+  private final BeamBreak m_beamTop = new BeamBreak(1);
+
+  DoubleLogEntry shotDistance; // meters
+  DoubleLogEntry shotAngle; // radians
+
+  private final IntakeCommand m_intakeCommand = new IntakeCommand(m_intake, m_indexing, m_beamBottom);
   private final PurgeCommand m_purgeCommand = new PurgeCommand(m_intake, m_indexing, m_shooter);
-  // private final ShootCommand m_shootCommand = new ShootCommand(m_intake, m_indexing, m_shooter, null);
-  // private final ShooterIntakeCommand m_shooterIntakeCommand = new ShooterIntakeCommand(m_indexing, m_shooter, null);
+  private final ShooterIntakeCommand m_shooterIntakeCommand = new ShooterIntakeCommand(m_indexing, m_shooter,
+      m_beamTop);
+  private final ShootCommand m_shootCommand = new ShootCommand(m_intake, m_indexing, m_shooter, m_beamTop, shotDistance,
+      shotAngle);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -72,17 +81,36 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
+    // Starts recording to data log
+    DataLogManager.start();
+
+    // Set up custom log entries
+    DataLog log = DataLogManager.getLog();
+    shotDistance = new DoubleLogEntry(log, "/shots/distance");
+    shotAngle = new DoubleLogEntry(log, "/shots/angle");
+
     AbsoluteDriveAdv closedAbsoluteDriveAdv = new AbsoluteDriveAdv(drivebase,
-                                                                   () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
-                                                                                                OperatorConstants.LEFT_Y_DEADBAND),
-                                                                   () -> -MathUtil.applyDeadband(driverXbox.getLeftX(),
-                                                                                                OperatorConstants.LEFT_X_DEADBAND),
-                                                                   () -> -MathUtil.applyDeadband(driverXbox.getRightX(),
-                                                                                                OperatorConstants.RIGHT_X_DEADBAND),
-                                                                   driverXbox.getHID()::getYButtonPressed,
-                                                                   driverXbox.getHID()::getAButtonPressed,
-                                                                   driverXbox.getHID()::getXButtonPressed,
-                                                                   driverXbox.getHID()::getBButtonPressed);
+        () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
+            OperatorConstants.LEFT_Y_DEADBAND),
+        () -> -MathUtil.applyDeadband(driverXbox.getLeftX(),
+            OperatorConstants.LEFT_X_DEADBAND),
+        () -> -MathUtil.applyDeadband(driverXbox.getRightX(),
+            OperatorConstants.RIGHT_X_DEADBAND),
+        driverXbox.getHID()::getYButtonPressed,
+        driverXbox.getHID()::getAButtonPressed,
+        driverXbox.getHID()::getXButtonPressed,
+        driverXbox.getHID()::getBButtonPressed);
+
+    VisionTest m_turnToTargetCommand = new VisionTest(drivebase,
+        () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
+            OperatorConstants.LEFT_Y_DEADBAND),
+        () -> -MathUtil.applyDeadband(driverXbox.getLeftX(),
+            OperatorConstants.LEFT_X_DEADBAND),
+        () -> -MathUtil.applyDeadband(driverXbox.getRightX(),
+            OperatorConstants.RIGHT_X_DEADBAND),
+        () -> -MathUtil.applyDeadband(driverXbox.getRightY(),
+            OperatorConstants.RIGHT_Y_DEADBAND),
+        m_vision.camera);
 
     // Applies deadbands and inverts controls because joysticks
     // are back-right positive while robot
@@ -111,32 +139,37 @@ public class RobotContainer {
         () -> -driverXbox.getRawAxis(2));
 
     drivebase.setDefaultCommand(
-        !RobotBase.isSimulation() ? 
-        driveFieldOrientedDirectAngle
-        // closedAbsoluteDriveAdv
-         : driveFieldOrientedDirectAngleSim);
+        !RobotBase.isSimulation() ? driveFieldOrientedDirectAngle
+            // closedAbsoluteDriveAdv
+            : driveFieldOrientedDirectAngleSim);
   }
 
   /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary predicate, or via the named factories in
-   * {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
-   * {@link CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4} controllers or
-   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joysticks}.
+   * Use this method to define your trigger->command mappings. Triggers can be
+   * created via the
+   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
+   * an arbitrary predicate, or via the named factories in
+   * {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses
+   * for
+   * {@link CommandXboxController
+   * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4}
+   * controllers or
+   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
+   * joysticks}.
    */
   private void configureBindings() {
     // OLD SWERVE DRIVE BINDINGS
     // m_robotDrive.setDefaultCommand(
-    //     // The left stick controls translation of the robot.
-    //     // Turning is controlled by the X axis of the right stick.
-    //     new RunCommand(() -> m_robotDrive.drive(
-    //         -MathUtil.applyDeadband(f310.getLeftY(), OIConstants.kDriveDeadband),
-    //         -MathUtil.applyDeadband(f310.getLeftX(), OIConstants.kDriveDeadband),
-    //         -MathUtil.applyDeadband(f310.getRightX(), OIConstants.kDriveDeadband),
-    //         true,
-    //         true),
-    //         m_robotDrive
-    //     )
+    // // The left stick controls translation of the robot.
+    // // Turning is controlled by the X axis of the right stick.
+    // new RunCommand(() -> m_robotDrive.drive(
+    // -MathUtil.applyDeadband(f310.getLeftY(), OIConstants.kDriveDeadband),
+    // -MathUtil.applyDeadband(f310.getLeftX(), OIConstants.kDriveDeadband),
+    // -MathUtil.applyDeadband(f310.getRightX(), OIConstants.kDriveDeadband),
+    // true,
+    // true),
+    // m_robotDrive
+    // )
     // );
 
     // final Trigger A = new Trigger(f310::getA);
@@ -147,11 +180,35 @@ public class RobotContainer {
     // driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
     // driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
     // driverXbox.b().whileTrue(
-    //     Commands.deferredProxy(() -> drivebase.driveToPose(
-    //                                new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
-    //                           ));
+    // Commands.deferredProxy(() -> drivebase.driveToPose(
+    // new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
+    // ));
 
     driverXbox.y().whileTrue(drivebase.sysIdDriveMotorCommand());
+
+    // float[] angles = {0.0f, 30.0f, 60.0f, 90.0f, 120.0f};
+    // float[] distances = {0.0f, 1.0f, 2.0f, 3.0f, 4.0f};
+
+    // // Create a lookup table instance
+    // LookupTable lookupTable = new LookupTable(angles, distances);
+
+    // // Test some distances to get angles
+    // float testDistance1 = 1.5f;
+    // float testDistance2 = 3.5f;
+
+    // // Get angles for test distances
+    // float angle1 = lookupTable.getAngleFromDistance(testDistance1);
+    // float angle2 = lookupTable.getAngleFromDistance(testDistance2);
+
+    // // Output the results
+    // System.out.println("Angle for distance " + testDistance1 + " is: " + angle1);
+    // System.out.println("Angle for distance " + testDistance2 + " is: " + angle2);
+
+    new Trigger(() -> !m_indexing.isLoaded()).and(driverXbox.a()).onTrue(m_intakeCommand);
+    new Trigger(m_indexing::isLoaded).and(driverXbox.a()).onTrue(m_shootCommand);
+    new Trigger(driverXbox.b()).onTrue(m_purgeCommand);
+    new Trigger(() -> !m_indexing.isLoaded()).and(driverXbox.x()).onTrue(m_shooterIntakeCommand);
+
   }
 
   /**

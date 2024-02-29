@@ -4,23 +4,51 @@
 
 package frc.robot.commands.swervedrive.drivebase;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
+// import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.util.List;
 import java.util.function.DoubleSupplier;
+
+import org.photonvision.PhotonCamera;
+
 import swervelib.SwerveController;
 import swervelib.math.SwerveMath;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class AbsoluteDrive extends Command
+public class VisionTest extends Command
 {
+    // // Constants such as camera and target height stored. Change per robot and goal!
+    // final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(24);
+    // final double TARGET_HEIGHT_METERS = Units.feetToMeters(5);
+    // // Angle between horizontal and the camera.
+    // final double CAMERA_PITCH_RADIANS = Units.degreesToRadians(0);
+
+    // How far from the target we want to be
+    final double GOAL_RANGE_METERS = Units.feetToMeters(3);
+
+    // Change this to match the name of your camera
+    PhotonCamera camera;
+
+    // PID constants should be tuned per robot
+    final double LINEAR_P = 0.1;
+    final double LINEAR_D = 0.0;
+    PIDController forwardController = new PIDController(LINEAR_P, 0, LINEAR_D);
+
+    final double ANGULAR_P = 0.1;
+    final double ANGULAR_D = 0.0;
+    PIDController turnController = new PIDController(ANGULAR_P, 0, ANGULAR_D);
+
+    // XboxController xboxController = new XboxController(1);
 
   private final SwerveSubsystem swerve;
   private final DoubleSupplier  vX, vY;
@@ -47,14 +75,15 @@ public class AbsoluteDrive extends Command
    *                          robot coordinate system, this is along the same axis as vX.  Should range from -1 to 1
    *                          with no deadband. Positive is away from the alliance wall.
    */
-  public AbsoluteDrive(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier headingHorizontal,
-                       DoubleSupplier headingVertical)
+  public VisionTest(SwerveSubsystem swerve, DoubleSupplier vX, DoubleSupplier vY, DoubleSupplier headingHorizontal,
+                       DoubleSupplier headingVertical, PhotonCamera camera)
   {
     this.swerve = swerve;
     this.vX = vX;
     this.vY = vY;
     this.headingHorizontal = headingHorizontal;
     this.headingVertical = headingVertical;
+    this.camera = camera;
 
     addRequirements(swerve);
   }
@@ -69,7 +98,6 @@ public class AbsoluteDrive extends Command
   @Override
   public void execute()
   {
-
     // Get the desired chassis speeds based on a 2 joystick module.
     ChassisSpeeds desiredSpeeds = swerve.getTargetSpeeds(vX.getAsDouble(), vY.getAsDouble(),
                                                          headingHorizontal.getAsDouble(),
@@ -100,7 +128,6 @@ public class AbsoluteDrive extends Command
 
     // Make the robot move
     swerve.drive(translation, desiredSpeeds.omegaRadiansPerSecond, true);
-
   }
 
   // Called once the command ends or is interrupted.

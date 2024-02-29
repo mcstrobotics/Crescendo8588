@@ -7,13 +7,25 @@ package frc.robot;
 import com.pathplanner.lib.util.PIDConstants;
 import com.revrobotics.CANSparkBase.IdleMode;
 
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-
-import edu.wpi.first.math.geometry.Translation3d;
 import swervelib.math.Matter;
+
+
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -28,67 +40,85 @@ import swervelib.math.Matter;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static class Vision {
+      public static final String kCameraName = "CAMERA NAME";
+      // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+      public static final Transform3d kRobotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
+
+      // The layout of the AprilTags on the field
+      public static final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
+
+      // The standard deviations of our vision estimated poses, which affect correction rate
+      // (Fake values. Experiment and determine estimation noise on an actual robot.)
+      // TODO !!! NEED REAL VALUE BUT WE PROBABLY WONT BE ABLE TO DO IN TIME SO JUST BE CONSERVATIVE
+      public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
+      public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+  }
   
   // YAGSL CONSTANTS
+  // TODO !!! NEED REAL VALUES
   public static final double ROBOT_MASS = (148 - 20.3) * 0.453592; // 32lbs * kg per pound
+  // TODO !!! NEED REAL VALUE FOR CHASSIS HEIGHT
   public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
   public static final double LOOP_TIME  = 0.13; //s, 20ms + 110ms sprk max velocity lag
+
   public static class OperatorConstants
   {
     // Joystick Deadband
     public static final double LEFT_X_DEADBAND  = 0.1;
     public static final double LEFT_Y_DEADBAND  = 0.1;
     public static final double RIGHT_X_DEADBAND = 0.1;
-    public static final double TURN_CONSTANT    = 6;
+    public static final double RIGHT_Y_DEADBAND = 0.1;
+    public static final double TURN_CONSTANT    = 6.0;
   }
 
-    public static final class AutonConstants
+  public static final class AutonConstants
   {
     public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.7, 0, 0);
     public static final PIDConstants ANGLE_PID   = new PIDConstants(0.4, 0, 0.01);
   }
   
-  public static final class DriveConstants {
-    // Driving Parameters - Note that these are not the maximum capable speeds of
-    // the robot, rather the allowed maximum speeds
-    public static final double kMaxSpeedMetersPerSecond = 4.8;
-    public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
+  // public static final class DriveConstants {
+  //   // Driving Parameters - Note that these are not the maximum capable speeds of
+  //   // the robot, rather the allowed maximum speeds
+  //   public static final double kMaxSpeedMetersPerSecond = 4.8;
+  //   public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
-    public static final double kDirectionSlewRate = 1.2; // radians per second
-    public static final double kMagnitudeSlewRate = 1.8; // percent per second (1 = 100%)
-    public static final double kRotationalSlewRate = 2.0; // percent per second (1 = 100%)
+  //   public static final double kDirectionSlewRate = 1.2; // radians per second
+  //   public static final double kMagnitudeSlewRate = 1.8; // percent per second (1 = 100%)
+  //   public static final double kRotationalSlewRate = 2.0; // percent per second (1 = 100%)
 
-    // TODO !!! WILL NEED TO CHANGE TRACK WIDTH AND WHEEL BASE
-    // Chassis configuration
-    public static final double kTrackWidth = Units.inchesToMeters(26.5);
-    // Distance between centers of right and left wheels on robot
-    public static final double kWheelBase = Units.inchesToMeters(26.5);
-    // Distance between front and back wheels on robot
-    public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
-      new Translation2d(kWheelBase / 2, kTrackWidth / 2),
-      new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
-      new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
-      new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
+  //   // TODO !!! WILL NEED TO CHANGE TRACK WIDTH AND WHEEL BASE
+  //   // Chassis configuration
+  //   public static final double kTrackWidth = Units.inchesToMeters(26.5);
+  //   // Distance between centers of right and left wheels on robot
+  //   public static final double kWheelBase = Units.inchesToMeters(26.5);
+  //   // Distance between front and back wheels on robot
+  //   public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
+  //     new Translation2d(kWheelBase / 2, kTrackWidth / 2),
+  //     new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
+  //     new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
+  //     new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 
-    // Angular offsets of the modules relative to the chassis in radians
-    public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
-    public static final double kFrontRightChassisAngularOffset = 0;
-    public static final double kBackLeftChassisAngularOffset = Math.PI;
-    public static final double kBackRightChassisAngularOffset = Math.PI / 2;
+  //   // Angular offsets of the modules relative to the chassis in radians
+  //   public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
+  //   public static final double kFrontRightChassisAngularOffset = 0;
+  //   public static final double kBackLeftChassisAngularOffset = Math.PI;
+  //   public static final double kBackRightChassisAngularOffset = Math.PI / 2;
 
-    // SPARK MAX CAN IDs
-    // public static final int kFrontLeftDrivingCanId = 32;
-    // public static final int kRearLeftDrivingCanId = 42;
-    // public static final int kFrontRightDrivingCanId = 12;
-    // public static final int kRearRightDrivingCanId = 6;
+  //   // SPARK MAX CAN IDs
+  //   // public static final int kFrontLeftDrivingCanId = 32;
+  //   // public static final int kRearLeftDrivingCanId = 42;
+  //   // public static final int kFrontRightDrivingCanId = 12;
+  //   // public static final int kRearRightDrivingCanId = 6;
 
-    // public static final int kFrontLeftTurningCanId = 31;
-    // public static final int kRearLeftTurningCanId = 4;
-    // public static final int kFrontRightTurningCanId = 11;
-    // public static final int kRearRightTurningCanId = 5;
+  //   // public static final int kFrontLeftTurningCanId = 31;
+  //   // public static final int kRearLeftTurningCanId = 4;
+  //   // public static final int kFrontRightTurningCanId = 11;
+  //   // public static final int kRearRightTurningCanId = 5;
 
-    public static final boolean kGyroReversed = false;
-  }
+  //   public static final boolean kGyroReversed = false;
+  // }
 
   // public static final class DriveConstants {
   //   // Driving Parameters - Note that these are not the maximum capable speeds of
