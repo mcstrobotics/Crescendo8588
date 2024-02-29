@@ -12,6 +12,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+
+import static frc.robot.Constants.Vision.kRobotToCam;
+
 import java.util.List;
 import java.util.function.DoubleSupplier;
 
@@ -24,9 +27,9 @@ import swervelib.SwerveController;
 import swervelib.math.SwerveMath;
 
 /**
- * An example command that uses an example subsystem.
+ * NOTE: right now this only aims and doesnt move towards a target
  */
-public class AimAtTargetTest extends Command {
+public class AimAtTarget extends Command {
   private final SwerveSubsystem swerve;
   // private final DoubleSupplier vX, vY;
   // private final DoubleSupplier heading;
@@ -34,12 +37,13 @@ public class AimAtTargetTest extends Command {
   private final PhotonCamera camera;
 
   // Constants such as camera and target height stored. Change per robot and goal!
-  final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(24);
-  final double TARGET_HEIGHT_METERS = Units.feetToMeters(5);
+  double CAMERA_HEIGHT_METERS;
+  double TARGET_HEIGHT_METERS;
   // Angle between horizontal and the camera.
-  final double CAMERA_PITCH_RADIANS = Units.degreesToRadians(0);
+  double CAMERA_PITCH_RADIANS = Units.degreesToRadians(0);
+
   // How far from the target we want to be
-  final double GOAL_RANGE_METERS = Units.feetToMeters(3);
+  double GOAL_RANGE_METERS = Units.feetToMeters(3);
 
   // PID constants should be tuned per robot
   final double LINEAR_P = 0.1;
@@ -51,34 +55,18 @@ public class AimAtTargetTest extends Command {
   PIDController headingController = new PIDController(ANGULAR_P, 0, ANGULAR_D);
 
   /**
-   * Used to drive a swerve robot in full field-centric mode. vX and vY supply
-   * translation inputs, where x is
-   * torwards/away from alliance wall and y is left/right. headingHorzontal and
-   * headingVertical are the Cartesian
-   * coordinates from which the robot's angle will be derived— they will be
-   * converted to a polar angle, which the robot
-   * will rotate to.
-   *
-   * @param swerve  The swerve drivebase subsystem.
-   * @param vX      DoubleSupplier that supplies the x-translation joystick input.
-   *                Should be in the range -1 to 1 with
-   *                deadband already accounted for. Positive X is away from the
-   *                alliance wall.
-   * @param vY      DoubleSupplier that supplies the y-translation joystick input.
-   *                Should be in the range -1 to 1 with
-   *                deadband already accounted for. Positive Y is towards the left
-   *                wall when looking through the driver
-   *                station glass.
-   * @param heading DoubleSupplier that supplies the robot's heading angle.
+   * 
    */
-  public AimAtTargetTest(
+  public AimAtTarget(
       SwerveSubsystem swerve,
       // DoubleSupplier vX, DoubleSupplier vY,
-      PhotonCamera camera) {
+      PhotonCamera camera, double TARGET_HEIGHT_METERS) {
     this.swerve = swerve;
     // this.vX = vX;
     // this.vY = vY;
     this.camera = camera;
+    this.TARGET_HEIGHT_METERS = TARGET_HEIGHT_METERS;
+    this.CAMERA_HEIGHT_METERS = kRobotToCam.getZ();
 
     addRequirements(swerve);
   }
@@ -109,10 +97,6 @@ public class AimAtTargetTest extends Command {
           TARGET_HEIGHT_METERS,
           CAMERA_PITCH_RADIANS,
           Units.degreesToRadians(result.getBestTarget().getPitch()));
-
-      // Use this range as the measurement we give to the PID controller.
-      // -1.0 required to ensure positive PID controller effort _increases_ range
-      forwardSpeed = -forwardController.calculate(range, GOAL_RANGE_METERS);
 
       // Use this range as the measurement we give to the PID controller.
       // -1.0 required to ensure positive PID controller effort _increases_ range

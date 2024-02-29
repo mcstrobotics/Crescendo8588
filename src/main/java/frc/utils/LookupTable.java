@@ -1,16 +1,16 @@
 package frc.utils;
 
 public class LookupTable {
-    private float[] angles; // in radians
-    private float[] distances;
+    private double[] angles; // in radians
+    private double[] distances;
 
-    public LookupTable(float[] angles, float[] distances) {
+    public LookupTable(double[] angles, double[] distances) {
         this.angles = angles;
         this.distances = distances;
     }
 
     // Linear Interpolation (lerp) function to calculate the angle
-    public float getAngleFromDistance(float distance) {
+    public double getAngleFromDistance(double distance) {
         // Find the two closest distances in the array
         int index1 = 0;
         int index2 = 1;
@@ -23,10 +23,10 @@ public class LookupTable {
             }
         }
         // Linear interpolation
-        float x1 = distances[index1];
-        float x2 = distances[index2];
-        float y1 = angles[index1];
-        float y2 = angles[index2];
+        double x1 = distances[index1];
+        double x2 = distances[index2];
+        double y1 = angles[index1];
+        double y2 = angles[index2];
         // Avoid division by zero
         if (x1 == x2) return y1;
         // Calculate the interpolated angle

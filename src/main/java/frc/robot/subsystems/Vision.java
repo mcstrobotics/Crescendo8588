@@ -1,9 +1,6 @@
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.Vision.kCameraName;
-import static frc.robot.Constants.Vision.kMultiTagStdDevs;
-import static frc.robot.Constants.Vision.kRobotToCam;
-import static frc.robot.Constants.Vision.kSingleTagStdDevs;
+import static frc.robot.Constants.Vision.*;
 
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
@@ -52,8 +49,7 @@ public class Vision {
             e.printStackTrace();
         }
 
-        photonEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera,
-                kRobotToCam);
+        photonEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, kRobotToCam);
         photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
     }
 
@@ -61,32 +57,55 @@ public class Vision {
         return camera.getLatestResult();
     }
 
-    public int getAprilTagId() {
-        PhotonPipelineResult result = getLatestResult();
-        int id = result.getBestTarget().getFiducialId();
-        return 0;
-    }
+    // /**
+    //  * The latest estimated robot pose on the field from vision data. This may be empty. This should
+    //  * only be called once per loop.
+    //  *
+    //  * @return An {@link EstimatedRobotPose} with an estimated pose, estimate timestamp, and targets
+    //  *     used for estimation.
+    //  */
+    // public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
+    //     var visionEst = photonEstimator.update();
+    //     double latestTimestamp = camera.getLatestResult().getTimestampSeconds();
+    //     boolean newResult = Math.abs(latestTimestamp - lastEstTimestamp) > 1e-5;
+    //     /*if (SwerveDriveTelemetry.isSimulation) {
+    //         visionEst.ifPresentOrElse(
+    //                 est ->
+    //                         getSimDebugField()
+    //                                 .getObject("VisionEstimation")
+    //                                 .setPose(est.estimatedPose.toPose2d()),
+    //                 () -> {
+    //                     if (newResult) getSimDebugField().getObject("VisionEstimation").setPoses();
+    //                 });
+    //     }*/
+    //     if (newResult) lastEstTimestamp = latestTimestamp;
+    //     return visionEst;
+    // }
 
     /**
      * The latest estimated robot pose on the field from vision data. This may be
      * empty. This should only be called once per loop.
      *
      * @return An {@link EstimatedRobotPose} with an estimated pose, estimate
-     *         timestamp, and targets
-     *         used for estimation.
+     *         timestamp, and targets used for estimation.
      */
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
         // utilize data from swerve to make it more accurate
         photonEstimator.setReferencePose(m_driveSubsystem.getPose());
-        // COMMENT THIS LINE OUT IF IT DOESN'T WORK WELL ^^
 
         // now we update our vision :)
         var visionEst = photonEstimator.update();
+
         double latestTimestamp = camera.getLatestResult().getTimestampSeconds();
         boolean newResult = Math.abs(latestTimestamp - lastEstTimestamp) > 1e-5;
         if (newResult)
             lastEstTimestamp = latestTimestamp;
+            
         return visionEst;
+    }
+    
+    public int getAprilTagId(PhotonPipelineResult result) {
+        return result.getBestTarget().getFiducialId();
     }
 
     /**
@@ -156,22 +175,23 @@ public class Vision {
 
     // // getting pitch to tag
     // public double getPitchToTag() {
-    // // getting robot position
-    // Pose3d robotPose = getEstimatedGlobalPose().estimatedPose;
-    // // getting height of robot camera (placeholder for now)
-    // double camHeightMeters = 1.0;
-    // var result = camera.getLatestResult();
-    // var id = result.getBestTarget().getFiducialId();
-    // // getting the target's pose
-    // var targetPoseOptional = kTagLayout.getTagPose(id);
-    // Pose3d targetPose = targetPoseOptional.get();
-    // // getting distances
-    // double verticalDistance = targetPose.getZ() - camHeightMeters;
-    // double horizontalDistance = Math.hypot(targetPose.getX() - robotPose.getX(),
-    // targetPose.getY() - robotPose.getY());
-    // // finding the pitch radians
-    // double pitchRadians = Math.atan2(verticalDistance, horizontalDistance);
-    // return pitchRadians;
+    //     var estimatedPose = getEstimatedGlobalPose();
+    //     // getting robot position
+    //     Pose3d robotPose = getEstimatedGlobalPose().estimatedPose;
+    //     // getting height of robot camera (placeholder for now)
+    //     double camHeightMeters = 1.0;
+    //     var result = camera.getLatestResult();
+    //     var id = result.getBestTarget().getFiducialId();
+    //     // getting the target's pose
+    //     var targetPoseOptional = kTagLayout.getTagPose(id);
+    //     Pose3d targetPose = targetPoseOptional.get();
+    //     // getting distances
+    //     double verticalDistance = targetPose.getZ() - camHeightMeters;
+    //     double horizontalDistance = Math.hypot(targetPose.getX() - robotPose.getX(),
+    //     targetPose.getY() - robotPose.getY());
+    //     // finding the pitch radians
+    //     double pitchRadians = Math.atan2(verticalDistance, horizontalDistance);
+    //     return pitchRadians;
     // }
 
     /** A Field2d for visualizing our robot and objects on the field. */

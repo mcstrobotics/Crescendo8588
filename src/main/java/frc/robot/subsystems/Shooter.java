@@ -236,17 +236,14 @@ public class Shooter extends SubsystemBase {
 
   // public void shoot() {
   // SmartDashboard.putString("pew pew", "pew");
-  // // don't need yet until index and shooter combined
   // }
 
   // public void aimUp() {
   // float angle = 0; // encoder
-  // // set servo to angle +10
   // }
 
   // public void aimDown() {
   // float angle = 0; // encoder
-  // // set servo to angle -10
   // }
 
   // public void aimStop() {

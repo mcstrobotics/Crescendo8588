@@ -178,12 +178,12 @@ public class Indexing extends SubsystemBase {
   public void setLoaded(boolean b) {
     loaded = b;
     SmartDashboard.putString("State", loaded ? "loaded" : "empty");
-    System.out.println(loaded ? "loaded" : "empty");
+    // System.out.println(loaded ? "loaded" : "empty");
   }
 
   public boolean isLoaded() {
     SmartDashboard.putString("State", loaded ? "loaded" : "empty");
-    System.out.println(loaded ? "loaded" : "empty");
+    // System.out.println(loaded ? "loaded" : "empty");
     return loaded;
   }
 

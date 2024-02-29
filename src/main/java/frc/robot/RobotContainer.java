@@ -32,16 +32,14 @@ import frc.robot.subsystems.Shooter;
 //import frc.robot.usercontrol.GamepadF310;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import frc.utils.LookupTable;
 
 // import edu.wpi.first.wpilibj2.command.Command;
 
 /**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in
- * the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of
- * the robot (including
+ * This class is where the bulk of the robot should be declared. Since Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
@@ -67,12 +65,25 @@ public class RobotContainer {
   DoubleLogEntry shotDistance; // meters
   DoubleLogEntry shotAngle; // radians
 
-  private final IntakeCommand m_intakeCommand = new IntakeCommand(m_intake, m_indexing, m_beamBottom);
-  private final PurgeCommand m_purgeCommand = new PurgeCommand(m_intake, m_indexing, m_shooter);
-  private final ShooterIntakeCommand m_shooterIntakeCommand = new ShooterIntakeCommand(m_indexing, m_shooter,
-      m_beamTop);
-  private final ShootCommand m_shootCommand = new ShootCommand(m_intake, m_indexing, m_shooter, m_beamTop, shotDistance,
-      shotAngle);
+  // hardcoded lookup tables
+  private LookupTable speakerLookupTable = new LookupTable(
+    new double[] {1, 2, 3, 4, 5}, // radians
+    new double[] {1, 2, 3, 4, 5}  // meters
+  );
+  private LookupTable ampLookupTable = new LookupTable(
+    new double[] {1, 2, 3, 4, 5}, // radians
+    new double[] {1, 2, 3, 4, 5}  // meters
+  );
+
+//   private final IntakeCommand m_intakeCommand = new IntakeCommand(m_intake, m_indexing, m_beamBottom);
+//   private final PurgeCommand m_purgeCommand = new PurgeCommand(m_intake, m_indexing, m_shooter);
+//   private final ShooterIntakeCommand m_shooterIntakeCommand = new ShooterIntakeCommand(m_indexing, m_shooter, m_beamTop);
+//   private final ShootCommand m_shootCommand = new ShootCommand(
+//     m_intake, m_indexing, m_shooter, m_vision, 
+//     m_beamTop, 
+//     shotDistance, shotAngle, 
+//     speakerLookupTable, ampLookupTable
+//     );
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -141,74 +152,24 @@ public class RobotContainer {
     drivebase.setDefaultCommand(
         !RobotBase.isSimulation() ? driveFieldOrientedDirectAngle
             // closedAbsoluteDriveAdv
-            : driveFieldOrientedDirectAngleSim);
+            : driveFieldOrientedDirectAngleSim
+        );
   }
 
   /**
-   * Use this method to define your trigger->command mappings. Triggers can be
-   * created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with
-   * an arbitrary predicate, or via the named factories in
-   * {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses
-   * for
-   * {@link CommandXboxController
-   * Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4}
-   * controllers or
-   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
+   * Use this method to define your trigger->command mappings. Triggers can be created via the
+   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary predicate, or via the named factories in
+   * {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
+   * {@link CommandXboxControllerXbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4} controllers or
+   * {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight joysticks}.
    */
   private void configureBindings() {
-    // OLD SWERVE DRIVE BINDINGS
-    // m_robotDrive.setDefaultCommand(
-    // // The left stick controls translation of the robot.
-    // // Turning is controlled by the X axis of the right stick.
-    // new RunCommand(() -> m_robotDrive.drive(
-    // -MathUtil.applyDeadband(f310.getLeftY(), OIConstants.kDriveDeadband),
-    // -MathUtil.applyDeadband(f310.getLeftX(), OIConstants.kDriveDeadband),
-    // -MathUtil.applyDeadband(f310.getRightX(), OIConstants.kDriveDeadband),
-    // true,
-    // true),
-    // m_robotDrive
-    // )
-    // );
-
-    // final Trigger A = new Trigger(f310::getA);
-    // final Trigger B = new Trigger(f310::getB);
-    // final Trigger X = new Trigger(f310::getX);
-    // final Trigger Y = new Trigger(f310::getY);
-
-    // driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-    // driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
-    // driverXbox.b().whileTrue(
-    // Commands.deferredProxy(() -> drivebase.driveToPose(
-    // new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
-    // ));
-
     driverXbox.y().whileTrue(drivebase.sysIdDriveMotorCommand());
 
-    // float[] angles = {0.0f, 30.0f, 60.0f, 90.0f, 120.0f};
-    // float[] distances = {0.0f, 1.0f, 2.0f, 3.0f, 4.0f};
-
-    // // Create a lookup table instance
-    // LookupTable lookupTable = new LookupTable(angles, distances);
-
-    // // Test some distances to get angles
-    // float testDistance1 = 1.5f;
-    // float testDistance2 = 3.5f;
-
-    // // Get angles for test distances
-    // float angle1 = lookupTable.getAngleFromDistance(testDistance1);
-    // float angle2 = lookupTable.getAngleFromDistance(testDistance2);
-
-    // // Output the results
-    // System.out.println("Angle for distance " + testDistance1 + " is: " + angle1);
-    // System.out.println("Angle for distance " + testDistance2 + " is: " + angle2);
-
-    new Trigger(() -> !m_indexing.isLoaded()).and(driverXbox.a()).onTrue(m_intakeCommand);
-    new Trigger(m_indexing::isLoaded).and(driverXbox.a()).onTrue(m_shootCommand);
-    new Trigger(driverXbox.b()).onTrue(m_purgeCommand);
-    new Trigger(() -> !m_indexing.isLoaded()).and(driverXbox.x()).onTrue(m_shooterIntakeCommand);
-
+    // new Trigger(() -> !m_indexing.isLoaded()).and(driverXbox.a()).onTrue(m_intakeCommand);
+    // new Trigger(m_indexing::isLoaded).and(driverXbox.a()).onTrue(m_shootCommand);
+    // new Trigger(driverXbox.b()).onTrue(m_purgeCommand);
+    // new Trigger(() -> !m_indexing.isLoaded()).and(driverXbox.x()).onTrue(m_shooterIntakeCommand);
   }
 
   /**
