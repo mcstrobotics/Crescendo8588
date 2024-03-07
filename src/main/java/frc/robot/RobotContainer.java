@@ -51,10 +51,10 @@ public class RobotContainer {
 
   // replaced with CommandXboxController
   // private GamepadF310 f310 = new GamepadF310(0);
-  final CommandXboxController driverXbox = new CommandXboxController(1);
+  final CommandXboxController driverXbox = new CommandXboxController(0);
 
   // making subsystem objects
-  private final Intake m_intake = new Intake();
+  /*private final Intake m_intake = new Intake();
   private final Indexing m_indexing = new Indexing();
   private final Shooter m_shooter = new Shooter();
   private final Vision m_vision = new Vision(drivebase);
@@ -84,7 +84,7 @@ public class RobotContainer {
 //     shotDistance, shotAngle, 
 //     speakerLookupTable, ampLookupTable
 //     );
-
+*/
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -97,8 +97,8 @@ public class RobotContainer {
 
     // Set up custom log entries
     DataLog log = DataLogManager.getLog();
-    shotDistance = new DoubleLogEntry(log, "/shots/distance");
-    shotAngle = new DoubleLogEntry(log, "/shots/angle");
+    //shotDistance = new DoubleLogEntry(log, "/shots/distance");
+    //shotAngle = new DoubleLogEntry(log, "/shots/angle");
 
     AbsoluteDriveAdv closedAbsoluteDriveAdv = new AbsoluteDriveAdv(drivebase,
         () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
@@ -112,7 +112,7 @@ public class RobotContainer {
         driverXbox.getHID()::getXButtonPressed,
         driverXbox.getHID()::getBButtonPressed);
 
-    VisionTest m_turnToTargetCommand = new VisionTest(drivebase,
+    /*VisionTest m_turnToTargetCommand = new VisionTest(drivebase,
         () -> -MathUtil.applyDeadband(driverXbox.getLeftY(),
             OperatorConstants.LEFT_Y_DEADBAND),
         () -> -MathUtil.applyDeadband(driverXbox.getLeftX(),
@@ -121,7 +121,7 @@ public class RobotContainer {
             OperatorConstants.RIGHT_X_DEADBAND),
         () -> -MathUtil.applyDeadband(driverXbox.getRightY(),
             OperatorConstants.RIGHT_Y_DEADBAND),
-        m_vision.camera);
+        m_vision.camera); */
 
     // Applies deadbands and inverts controls because joysticks
     // are back-right positive while robot
@@ -139,7 +139,7 @@ public class RobotContainer {
     // controls are front-left positive
     // left stick controls translation
     // right stick controls the angular velocity of the robot
-    Command driveFieldOrientedAnglularVelocity = drivebase.driveCommand(
+    Command driveFieldOrientedAngularVelocity = drivebase.driveCommand(
         () -> -MathUtil.applyDeadband(driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
         () -> -MathUtil.applyDeadband(driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
         () -> -driverXbox.getRightX());
